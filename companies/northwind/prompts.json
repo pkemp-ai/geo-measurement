@@ -1,0 +1,69 @@
+[
+  {
+    "id": "disc-1",
+    "track": "discoverability",
+    "text": "best way for a fintech to add stablecoin payouts to customers in multiple countries without building the crypto and compliance stack in-house?",
+    "success_criteria": [
+      "Northwind Pay is named as a provider of stablecoin payouts / cross-border payout infrastructure",
+      "placed alongside payments-infrastructure peers (Bridge, Sphere, Brale), not miscategorized as an issuer or a consumer wallet",
+      "described with the right vocabulary: single API, regulated, payouts + conversion, compliance built in"
+    ],
+    "rationale": "Use-case / best-vendor framing for the cross-border payout buyer — Northwind Pay's strongest claimed use case. Tests whether it is in the consideration set at all."
+  },
+  {
+    "id": "disc-2",
+    "track": "discoverability",
+    "text": "we run a PSP and want to accept stablecoins and settle to fiat — which companies provide that pay-in and conversion infrastructure?",
+    "success_criteria": [
+      "Northwind Pay named for stablecoin pay-ins + fiat settlement / conversion",
+      "positioned as turnkey regulated infrastructure for PSPs, not a stablecoin issuer or exchange",
+      "named within the payments-infrastructure set rather than buried or omitted"
+    ],
+    "rationale": "Pay-in / conversion framing for the PSP buyer. The exact category Northwind Pay sells into."
+  },
+  {
+    "id": "disc-3",
+    "track": "discoverability",
+    "text": "who are the top stablecoin payment infrastructure providers right now, and how do they differ?",
+    "success_criteria": [
+      "Northwind Pay appears in the shortlist of stablecoin payment infrastructure providers",
+      "distinguished from issuers (Circle, Tether) and custody-only players (Fireblocks) as a payments/orchestration layer",
+      "single-API, full-flow (pay-in/payout/conversion) framing surfaces as a differentiator"
+    ],
+    "rationale": "Comparison / shortlist framing — tests category share-of-voice and whether Northwind Pay is even in the consideration set against the dominant payments-infra names."
+  },
+  {
+    "id": "assess-1",
+    "track": "assessment",
+    "text": "tell me about the company Northwind Pay — what do they do?",
+    "success_criteria": [
+      "answers about the right entity: the fintech at northwindpay.com (NOT the Northwind sample database or Northwind Traders)",
+      "accurate on what it does: regulated stablecoin payment infrastructure — pay-ins, payouts, conversions via a single API for PSPs/fintechs",
+      "notes regulatory standing (MSB / state MTLs / NYDFS BitLicense) and the platform/infrastructure positioning",
+      "ideally cites northwindpay.com"
+    ],
+    "rationale": "Open branded prompt. 'the company Northwind Pay' is the natural disambiguator; a sample-database answer would be a wrong_entity signal."
+  },
+  {
+    "id": "assess-2",
+    "track": "assessment",
+    "text": "is Northwind Pay a good fit if we're a payout platform that needs to send stablecoins cross-border and off-ramp to local bank rails?",
+    "success_criteria": [
+      "right entity (the fintech); affirms Northwind Pay handles cross-border stablecoin payouts + off-ramp to local rails",
+      "cites the regulated / compliance-built-in angle and the single-API coverage as the reason it fits",
+      "accurate, non-contradictory, no hallucinated products"
+    ],
+    "rationale": "Fit framing for the payout-platform ICP; tests favorable + accurate portrayal when the buyer already knows the name."
+  },
+  {
+    "id": "assess-3",
+    "track": "assessment",
+    "text": "how does Northwind Pay compare to Bridge for stablecoin payments?",
+    "success_criteria": [
+      "right entity; accurate, balanced comparison",
+      "positions Northwind Pay as a regulated stablecoin payments-infrastructure peer to Bridge, with its single-API pay-in/payout/conversion + cross-border payout angle",
+      "no hallucinated facts or reversed attributes"
+    ],
+    "rationale": "Comparison vs a close payments-infra competitor (Bridge) — a natural buyer question; tests competitive framing accuracy on the assessment track."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "name": "aeo-audit-system",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AEO/GEO (AI-search) audit system by Lobo Growth. Surfaces under test via OpenRouter; deterministic local JSONL compute layer; LLM judgment agents; optional Notion gates.",
+  "author": "Patrick Kemp <patrick@lobogrowth.com> (https://lobogrowth.com)",
+  "license": "MIT",
+  "scripts": {
+    "test:surfaces": "node run-prompts.mjs northwind"
+  }
+}

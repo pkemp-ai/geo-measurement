@@ -1,0 +1,56 @@
+{
+  "synthetic": true,
+  "note": "Fictional dataset for the AEO/GEO audit showcase. All Northwind Pay scores and evidence are invented; cited URLs are illustrative and do not resolve.",
+  "content_authority_score": 2.2,
+  "summary": "Pages that exist, not yet a source models reach for. The site explains the product clearly and there is a real (if slim) developer-docs surface, but there is no original research, no named framework, no durable research hub, and a low publishing cadence skewed to product and company news. There is almost nothing on the site that a model would cite as the authority on a category question — which is the direct cause of the 0.11 discoverability citation rate.",
+  "dimensions": {
+    "original_research_data": {
+      "score": 2,
+      "rationale": "Northwind sees genuinely citeable proprietary data — stablecoin payout volume by corridor, conversion spreads, settlement times — but publishes none of it as research. There is one blog post with a couple of internal stats ('we settle payouts in 40+ countries,' 'most payouts clear in under a minute') but no recurring report, index, or dataset. For a company that processes a multi-billion-dollar payout run-rate, this is the single biggest unforced error: the raw material for the definitive 'state of stablecoin payouts' data product exists and is simply not being published, so models have no Northwind data to quote on the category.",
+      "evidence": [
+        "https://www.northwindpay.com/blog/why-payouts-are-the-hard-part-of-stablecoins",
+        "https://www.northwindpay.com/payouts"
+      ]
+    },
+    "definitive_guides": {
+      "score": 3,
+      "rationale": "A modest but real set of explainers maps to the category terms: 'What is a stablecoin payout?', 'Pay-ins vs payouts vs conversions,' and 'How cross-border stablecoin settlement works' read as on-topic and broadly accurate rather than filler, and the developer docs add reference depth (API reference, payouts guide, conversion quoting). What keeps this from a 4-5: the guides are short and product-adjacent (each steers to 'Talk to sales'), none is a canonical, regularly-updated pillar page that owns a head term like 'stablecoin payouts,' and they lack the neutral, claim-style framing models prefer to cite.",
+      "evidence": [
+        "https://www.northwindpay.com/blog/what-is-a-stablecoin-payout",
+        "https://www.northwindpay.com/blog/pay-ins-vs-payouts-vs-conversions",
+        "https://docs.northwindpay.com/guides/payouts"
+      ]
+    },
+    "named_frameworks": {
+      "score": 1,
+      "rationale": "No named, ownable framework. Northwind has no equivalent of a 'six layers of stablecoin payments' model or a scored methodology that a third party could reuse and attribute back to it. Content is described in generic category language ('the stablecoin payment flow,' 'one API'), which is not the kind of distinctive, citeable mental model that earns pickup and links. This is a greenfield opportunity: a single well-constructed named framework around the pay-in/payout/conversion flow could become the brand's first real citation magnet.",
+      "evidence": [
+        "https://www.northwindpay.com/blog (no named framework across current posts)"
+      ]
+    },
+    "publishing_cadence": {
+      "score": 2,
+      "rationale": "A live but thin and uneven operation. The blog shows roughly one post a month, and the mix skews to product updates ('Conversions now support stablecoin-to-stablecoin') and company news (the Series B, new hires) over category thought-leadership. There is no dedicated, indexable research or insights hub — research and explainers are scattered across the general blog. The cadence does not read as a compounding body of work that would shift the site from 'pages that exist' to 'the source models pull for stablecoin payouts.'",
+      "evidence": [
+        "https://www.northwindpay.com/blog",
+        "https://www.northwindpay.com/blog/conversions-now-support-stablecoin-to-stablecoin"
+      ]
+    },
+    "backlinks_syndication": {
+      "score": 2,
+      "rationale": "Earned amplification is almost entirely the funding cycle. The Series B drove a burst of links (TechCrunch, Finextra, PYMNTS) but there is no flywheel where original Northwind content gets cited as the source on category questions — because there is no original research or framework to cite. A handful of partner/integration pages link in, and the developer docs attract some organic developer links, but nothing positions Northwind as the reference on 'stablecoin payouts' or 'stablecoin payment infrastructure.'",
+      "evidence": [
+        "https://techcrunch.com/2025/03/northwind-pay-series-b-stablecoin-payouts/",
+        "https://www.finextra.com/newsarticle/northwind-pay-raises-48m-series-b",
+        "https://docs.northwindpay.com/"
+      ]
+    }
+  },
+  "citeability_punch_list": [
+    "Publish a recurring, branded original-data product from what Northwind uniquely sees — a quarterly 'Stablecoin Payouts Index' or 'Cross-Border Stablecoin Settlement Report' (volume by corridor, average settlement time, conversion spreads). A standing, ungated, HTML-first data report with a stable URL and a 'key statistics' block is the single strongest citation magnet for 'stablecoin payouts' and 'stablecoin payment infrastructure,' and would convert event-driven funding press into a steady citation flywheel.",
+    "Create one named, vendor-neutral framework around the payment flow Northwind owns (e.g. 'The Stablecoin Payment Flow: pay-in, convert, payout' or a corridor-readiness model), as a canonical, diagrammed, versioned pillar page — then seed it into comparison and listicle content. A reused, attributed framework is what earns citations on 'stablecoin orchestration' and 'crypto-as-a-service payments,' and Northwind currently has none.",
+    "Stand up a real research/insights hub at a working path (e.g. northwindpay.com/insights) with schema-marked Article/Dataset collections, and house the index, the framework, and the explainers there instead of scattering them across the general blog — giving models one durable authority surface to cite for the category terms.",
+    "Promote the strongest explainers into definitive, regularly-updated pillar guides for each head category term ('What is a stablecoin payout', 'How cross-border stablecoin settlement works', 'Stablecoin pay-ins for PSPs') as neutral reference pages (FAQ/HowTo schema, claim-style sentences, minimal sales CTA) — the format models prefer to cite for definitional queries.",
+    "Lift publishing cadence on category thought-leadership (target ~2 substantive, non-product pieces a month) so a compounding body of work accumulates around the discoverability terms, rather than the current product/company-news-heavy monthly mix."
+  ]
+}

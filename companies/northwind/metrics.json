@@ -1,0 +1,197 @@
+{
+  "by_track": {
+    "discoverability": {
+      "n": 9,
+      "mention_rate": 0.33,
+      "citation_rate": 0.11
+    },
+    "assessment": {
+      "n": 9,
+      "mention_rate": 1,
+      "citation_rate": 0.89
+    }
+  },
+  "by_track_surface": {
+    "discoverability": {
+      "claude": {
+        "n": 3,
+        "mention_rate": 0.33,
+        "citation_rate": 0
+      },
+      "perplexity": {
+        "n": 3,
+        "mention_rate": 0,
+        "citation_rate": 0
+      },
+      "chatgpt": {
+        "n": 3,
+        "mention_rate": 0.67,
+        "citation_rate": 0.33
+      }
+    },
+    "assessment": {
+      "claude": {
+        "n": 3,
+        "mention_rate": 1,
+        "citation_rate": 0.67
+      },
+      "perplexity": {
+        "n": 3,
+        "mention_rate": 1,
+        "citation_rate": 1
+      },
+      "chatgpt": {
+        "n": 3,
+        "mention_rate": 1,
+        "citation_rate": 1
+      }
+    }
+  },
+  "share_of_voice": {
+    "brand": 3,
+    "competitors": {
+      "Circle": 9,
+      "Bridge": 9,
+      "Brale": 6,
+      "Zero Hash": 4,
+      "Crossmint": 4,
+      "Sphere": 3,
+      "Fireblocks": 3,
+      "Stripe": 3,
+      "Rain": 2
+    },
+    "n_discoverability": 9
+  },
+  "top_cited_domains": {
+    "discoverability": [
+      {
+        "host": "bridge.xyz",
+        "source_type": "competitor",
+        "n_answers": 6,
+        "rate": 0.67
+      },
+      {
+        "host": "sphere.fi",
+        "source_type": "competitor",
+        "n_answers": 3,
+        "rate": 0.33
+      },
+      {
+        "host": "circle.com",
+        "source_type": "competitor",
+        "n_answers": 3,
+        "rate": 0.33
+      },
+      {
+        "host": "brale.xyz",
+        "source_type": "competitor",
+        "n_answers": 4,
+        "rate": 0.44
+      },
+      {
+        "host": "finextra.com",
+        "source_type": "press_or_other",
+        "n_answers": 3,
+        "rate": 0.33
+      },
+      {
+        "host": "crossmint.com",
+        "source_type": "competitor",
+        "n_answers": 3,
+        "rate": 0.33
+      },
+      {
+        "host": "stablecoininsider.org",
+        "source_type": "press_or_other",
+        "n_answers": 3,
+        "rate": 0.33
+      },
+      {
+        "host": "developers.circle.com",
+        "source_type": "competitor",
+        "n_answers": 2,
+        "rate": 0.22
+      },
+      {
+        "host": "zerohash.com",
+        "source_type": "competitor",
+        "n_answers": 2,
+        "rate": 0.22
+      },
+      {
+        "host": "docs.stripe.com",
+        "source_type": "competitor",
+        "n_answers": 2,
+        "rate": 0.22
+      },
+      {
+        "host": "cobo.com",
+        "source_type": "press_or_other",
+        "n_answers": 2,
+        "rate": 0.22
+      },
+      {
+        "host": "stripe.com",
+        "source_type": "competitor",
+        "n_answers": 2,
+        "rate": 0.22
+      },
+      {
+        "host": "fireblocks.com",
+        "source_type": "competitor",
+        "n_answers": 1,
+        "rate": 0.11
+      },
+      {
+        "host": "bitpay.com",
+        "source_type": "press_or_other",
+        "n_answers": 1,
+        "rate": 0.11
+      },
+      {
+        "host": "startupstash.com",
+        "source_type": "press_or_other",
+        "n_answers": 1,
+        "rate": 0.11
+      },
+      {
+        "host": "northwindpay.com",
+        "source_type": "own_domain",
+        "n_answers": 1,
+        "rate": 0.11
+      }
+    ],
+    "assessment": [
+      {
+        "host": "northwindpay.com",
+        "source_type": "own_domain",
+        "n_answers": 8,
+        "rate": 0.89
+      },
+      {
+        "host": "crunchbase.com",
+        "source_type": "directory",
+        "n_answers": 4,
+        "rate": 0.44
+      },
+      {
+        "host": "bridge.xyz",
+        "source_type": "competitor",
+        "n_answers": 3,
+        "rate": 0.33
+      },
+      {
+        "host": "linkedin.com",
+        "source_type": "directory",
+        "n_answers": 1,
+        "rate": 0.11
+      },
+      {
+        "host": "stablecoininsider.org",
+        "source_type": "press_or_other",
+        "n_answers": 1,
+        "rate": 0.11
+      }
+    ]
+  }
+}

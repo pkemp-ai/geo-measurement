@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+
+# Per-company audit data is private client work. The repo ships ONLY the
+# synthetic Northwind Pay example; ignore every other company folder so real
+# client runs are never committed by accident.
+companies/*
+!companies/northwind/

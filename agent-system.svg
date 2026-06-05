@@ -1,0 +1,64 @@
+<svg width="560" height="330" viewBox="0 0 560 330" xmlns="http://www.w3.org/2000/svg" fill="none" font-family="Inter, sans-serif">
+  <!-- Multi-agent system diagram for the "One audit, run by a multi-agent system" slide.
+       Hub + style reused from the lobogrowth.com homepage "constellation" illustration.
+       Transparent background: designed to sit on the #0F1117 slide.
+       The three AI nodes (Claude / Perplexity / ChatGPT) are WHITE logo slots — drop the
+       official full-color logos into the dashed boxes. -->
+  <defs>
+    <pattern id="halftone" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.1" fill="rgba(163,217,165,0.32)"/>
+    </pattern>
+    <radialGradient id="fade" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+      <stop offset="55%" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="discMask"><rect x="30" y="50" width="230" height="230" fill="url(#fade)"/></mask>
+  </defs>
+
+  <!-- halftone disc behind the hub -->
+  <circle cx="145" cy="165" r="115" fill="url(#halftone)" mask="url(#discMask)"/>
+
+  <!-- spokes: hub -> 5 nodes -->
+  <g stroke="rgba(163,217,165,0.30)" stroke-width="1.2" stroke-dasharray="2 5" stroke-linecap="round">
+    <line x1="206" y1="165" x2="498" y2="38"/>
+    <line x1="206" y1="165" x2="498" y2="101"/>
+    <line x1="206" y1="165" x2="498" y2="164"/>
+    <line x1="206" y1="165" x2="498" y2="227"/>
+    <line x1="206" y1="165" x2="498" y2="290"/>
+  </g>
+
+  <!-- hub: Agent -->
+  <rect x="84" y="145" width="122" height="40" rx="20" fill="#16181f" stroke="rgba(163,217,165,0.7)" stroke-width="1.5"/>
+  <circle cx="108" cy="165" r="12" fill="rgba(163,217,165,0.20)" stroke="rgba(163,217,165,0.75)" stroke-width="1"/>
+  <path d="M108,158 L109.4,163.6 L115,165 L109.4,166.4 L108,172 L106.6,166.4 L101,165 L106.6,163.6 Z" fill="#a3d9a5"/>
+  <text x="128" y="170.5" font-size="15" font-weight="600" fill="#a3d9a5" letter-spacing="0.2">Agent</text>
+
+  <!-- Node 1: Claude (white logo slot) -->
+  <text text-anchor="end" x="486" y="42" font-size="13" font-weight="500" fill="#E8EAF0">Claude</text>
+  <rect x="498" y="13" width="50" height="50" rx="12" fill="#ffffff"/>
+  <rect x="507" y="22" width="32" height="32" rx="6" fill="none" stroke="#c9ccd4" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <!-- Node 2: Perplexity (white logo slot) -->
+  <text text-anchor="end" x="486" y="105" font-size="13" font-weight="500" fill="#E8EAF0">Perplexity</text>
+  <rect x="498" y="76" width="50" height="50" rx="12" fill="#ffffff"/>
+  <rect x="507" y="85" width="32" height="32" rx="6" fill="none" stroke="#c9ccd4" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <!-- Node 3: ChatGPT (white logo slot) -->
+  <text text-anchor="end" x="486" y="168" font-size="13" font-weight="500" fill="#E8EAF0">ChatGPT</text>
+  <rect x="498" y="139" width="50" height="50" rx="12" fill="#ffffff"/>
+  <rect x="507" y="148" width="32" height="32" rx="6" fill="none" stroke="#c9ccd4" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <!-- Node 4: Your website (sage globe) -->
+  <text text-anchor="end" x="486" y="231" font-size="13" font-weight="500" fill="#E8EAF0">Your website</text>
+  <rect x="498" y="202" width="50" height="50" rx="12" fill="#16181f" stroke="rgba(163,217,165,0.45)" stroke-width="1.2"/>
+  <circle cx="523" cy="227" r="11" fill="none" stroke="#a3d9a5" stroke-width="1.4"/>
+  <ellipse cx="523" cy="227" rx="5" ry="11" fill="none" stroke="#a3d9a5" stroke-width="1.2"/>
+  <line x1="512" y1="227" x2="534" y2="227" stroke="#a3d9a5" stroke-width="1.2"/>
+
+  <!-- Node 5: Industry research (sage magnifier) -->
+  <text text-anchor="end" x="486" y="294" font-size="13" font-weight="500" fill="#E8EAF0">Industry research</text>
+  <rect x="498" y="265" width="50" height="50" rx="12" fill="#16181f" stroke="rgba(163,217,165,0.45)" stroke-width="1.2"/>
+  <circle cx="519" cy="286" r="8" fill="none" stroke="#a3d9a5" stroke-width="1.4"/>
+  <line x1="525" y1="292" x2="532" y2="299" stroke="#a3d9a5" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

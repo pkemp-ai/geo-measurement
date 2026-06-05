@@ -1,0 +1,28 @@
+{
+  "company": "Northwind Pay",
+  "domain": "northwindpay.com",
+  "synthetic": true,
+  "note": "Fictional company invented for a public showcase of the AEO/GEO audit system. All Northwind Pay claims, scores, customers, funding, and quotes are synthetic. Competitors named are real public companies used only as market context.",
+  "aliases": ["Northwind Pay, Inc.", "Northwind", "NorthwindPay"],
+  "category_terms": [
+    "stablecoin payment infrastructure",
+    "stablecoin payments API",
+    "stablecoin pay-ins and payouts",
+    "cross-border stablecoin payouts",
+    "stablecoin-as-a-service for fintechs",
+    "crypto-as-a-service payments",
+    "stablecoin orchestration API",
+    "regulated stablecoin payments provider"
+  ],
+  "competitors": [
+    { "name": "Circle", "domain": "circle.com" },
+    { "name": "Bridge", "domain": "bridge.xyz" },
+    { "name": "Stripe", "domain": "stripe.com" },
+    { "name": "Sphere", "domain": "sphere.fi" },
+    { "name": "Fireblocks", "domain": "fireblocks.com" },
+    { "name": "Brale", "domain": "brale.xyz" },
+    { "name": "Zero Hash", "domain": "zerohash.com" },
+    { "name": "Crossmint", "domain": "crossmint.com" },
+    { "name": "Rain", "domain": "raincards.xyz" }
+  ]
+}

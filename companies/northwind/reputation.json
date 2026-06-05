@@ -1,0 +1,50 @@
+{
+  "synthetic": true,
+  "note": "Fictional dataset for the AEO/GEO audit showcase. All Northwind Pay scores and evidence are invented; cited URLs are illustrative and do not resolve.",
+  "overall_score": 2.4,
+  "summary": "The reputation graph is the root cause of the discoverability gap. The reference layers that answer 'what / who is Northwind Pay' are adequate (a maintained Crunchbase profile, a clean LinkedIn, a little event-driven funding press), but the discoverability-critical layers are thin or absent: Northwind is in zero 'best stablecoin payment infrastructure' roundups, has effectively no Reddit or G2 footprint, no Wikipedia page, and almost no third-party comparison content. Models building a category shortlist have nothing to pull Northwind from.",
+  "dimensions": {
+    "reddit": {
+      "score": 1,
+      "rationale": "Effectively no organic presence. site:reddit.com queries for Northwind Pay returned no naming threads in r/fintech, r/cryptocurrency, or r/stablecoins, where Circle, Bridge, Sphere, and Brale are discussed regularly. Reddit is an LLM-trusted source for 'who actually uses X' and vendor-shortlist questions, so a near-zero footprint here is a direct discoverability gap — the brand is invisible in exactly the community surface models lean on for payments-vendor recommendations.",
+      "evidence": ["none found — site:reddit.com 'Northwind Pay' returned no naming threads", "https://www.reddit.com/r/fintech/comments/1swp2zh/what_companies_provide_stablecoin_payment_apis/ (lists Bridge, Sphere, Circle; Northwind absent)"]
+    },
+    "review_site": {
+      "score": 1,
+      "rationale": "No usable B2B review footprint. No G2 or Capterra profile exists for Northwind Pay (both 404), so there is no structured peer-review signal a model can cite, and no star rating to anchor an assessment answer. Competitors Bridge and Fireblocks carry populated G2 categories. For a B2B infrastructure seller this is a missed, low-effort surface: a claimed G2 profile with a handful of reviews would create a citeable third-party signal where there is currently nothing.",
+      "evidence": ["https://www.g2.com/products/northwind-pay/reviews (404 — no profile)", "https://www.capterra.com/p/northwind-pay/ (no profile)"]
+    },
+    "wikipedia": {
+      "score": 1,
+      "rationale": "No Wikipedia article. en.wikipedia.org/wiki/Northwind_Pay does not exist, and the 'Northwind' term on Wikipedia resolves to the Microsoft sample database and unrelated topics — a mild disambiguation risk. Wikipedia is the default grounding source models pull for 'what is company X,' and its absence pushes the model to rely almost entirely on the company's own site (which works for assessment, but contributes nothing to category discoverability). A notability bar likely isn't met yet at Series B, so this is a known ceiling rather than an easy fix.",
+      "evidence": ["https://en.wikipedia.org/wiki/Northwind_Pay (does not exist)", "https://en.wikipedia.org/wiki/Northwind (sample database / unrelated)"]
+    },
+    "press": {
+      "score": 3,
+      "rationale": "Event-driven but real. The 2025 Series B drew a funding-announcement cycle (TechCrunch brief, Finextra, PYMNTS, a Fintech Finance News writeup) and there is occasional trade coverage of the cross-border payout product. It is on-category and credible, but it is milestone press (the raise) rather than sustained category coverage, and Northwind is rarely quoted as a source or expert voice in stablecoin-payments stories — so it builds name recognition for 'who got funded' more than authority for 'who leads the category.'",
+      "evidence": ["https://techcrunch.com/2025/03/northwind-pay-series-b-stablecoin-payouts/", "https://www.finextra.com/newsarticle/northwind-pay-raises-48m-series-b", "https://www.pymnts.com/news/2025/northwind-pay-stablecoin-payout-infrastructure/"]
+    },
+    "podcasts_bylines": {
+      "score": 2,
+      "rationale": "Thin founder voice. CEO Dana Whitfield has a couple of in-category appearances (a fintech-payments podcast episode and a panel writeup) and the company runs an occasional bylined blog, but there is no consistent thought-leadership presence — no recurring podcast circuit, few external bylines, and little of the founder-as-category-expert content that feeds a model's picture of who matters in stablecoin payments. Compared with the steady founder voices in the competitive set, this is underweight.",
+      "evidence": ["https://open.spotify.com/episode/northwind-pay-whitfield-stablecoin-payouts", "https://www.northwindpay.com/blog/why-payouts-are-the-hard-part-of-stablecoins"]
+    },
+    "listicles": {
+      "score": 1,
+      "rationale": "The single weakest and highest-leverage gap. Northwind Pay was absent from every 'best stablecoin payment infrastructure / payouts / payment API' roundup checked — finextra, stablecoininsider, cobo, crossmint, and startupstash — all of which lead with Circle, Bridge, Sphere, Fireblocks, and Brale. These are precisely the pages Perplexity and ChatGPT pull from for category and best-vendor questions, which is why the discoverability mention rate collapses to ~33% and Perplexity (the most listicle-dependent surface) never names Northwind at all.",
+      "evidence": ["https://www.finextra.com/blogposting/31466/top-stablecoin-payment-infrastructure-providers", "https://stablecoininsider.org/stablecoin-payment-providers-in-2026/", "https://www.cobo.com/post/2026-guide-to-the-most-reliable-stablecoin-payments-providers", "https://startupstash.com/top-stablecoin-infrastructure-platforms/"]
+    },
+    "directories": {
+      "score": 4,
+      "rationale": "The strongest reputation layer and the reason assessment-track vetting is clean. Crunchbase carries a current, populated profile (founded 2021, NYC, ~$78M raised across Seed/Series A/Series B, named investors, ~90 employees), and LinkedIn has an active, correct company page with the founders and product. PitchBook and CB Insights have lighter but present entries. A model resolving 'what is Northwind Pay, who funds it, how big is it' has clean, corroborating structured data — which is exactly what holds the by-name answers together.",
+      "evidence": ["https://www.crunchbase.com/organization/northwind-pay", "https://www.linkedin.com/company/northwind-pay", "https://pitchbook.com/profiles/company/northwind-pay"]
+    }
+  },
+  "likely_cited_sources": [
+    "northwindpay.com — the primary source models pull for by-name questions; clean and complete, which is why assessment is strong but discoverability is not (own site doesn't help a model that hasn't already heard the name)",
+    "crunchbase.com — populated funding/headcount/investor data; the backbone of 'what / how big is Northwind Pay' vetting answers",
+    "finextra.com / stablecoininsider.org — the category roundups models pull for 'best stablecoin payment infrastructure'; Northwind is absent from them, so they currently work AGAINST its discoverability",
+    "linkedin.com — active company page corroborating team and product for entity resolution",
+    "techcrunch.com / pymnts.com — Series B funding coverage; builds name recognition but not category authority"
+  ]
+}
