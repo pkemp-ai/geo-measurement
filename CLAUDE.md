@@ -6,41 +6,65 @@ Guidance for working in this repo with Claude Code. Full methodology lives in
 ## What it does
 
 Audits how AI search (ChatGPT, Perplexity, Claude) discovers, names, and
-describes a company, then ships a client report. Two jobs, scored separately and
-**never averaged**: **Discoverability** (named in category answers?) and
-**Assessment** (described accurately when asked by name?). The report leads with
-which one is broken.
+describes a company, then ships a client deliverable. Two jobs, scored
+separately and **never averaged**: **Discoverability** (named in category
+answers?) and **Assessment** (described accurately when asked by name?). The
+report leads with which one is broken, then scores the four levers the company
+can pull (Access / Identity / Content / Reputation) and ranks fixes by
+importance x gap.
 
 ## Run it — 3 commands, 2 gates
 
-- `/audit-prep <Company> <domain>` → research + pin entity + draft prompts → **Gate 1** (approve prompts)
-- `/audit-run <slug>` → query 3 surfaces + reputation/content/site audits + classify + grade → **Gate 2** (review findings)
-- `/audit-report <slug>` → client report
+- `/audit-prep <Company> <domain>` → research + pin entity + audit_profile + draft prompts with per-criterion rubric → **Gate 1** (approve prompts + criteria)
+- `/audit-run <slug>` → surfaces (k runs/prompt) + evidence ledgers + classify + judge-then-score grading + lever scoring + importance → **Gate 2** (review findings + adjudicate the review queue)
+- `/audit-report <slug>` → compile the client deck from `canva-fill.json`
 
 Each command stops at its gate; nothing auto-advances.
 
 ## Layout
 
-- `run-prompts.mjs` (surface tester) · `classify.mjs` · `compute-metrics.mjs` ·
-  `prose-lint.mjs` · `lib/{surfaces,openrouter}.mjs` — deterministic harness
-  (Node, native `fetch`, no deps).
+- Deterministic harness (Node, native `fetch`, no deps):
+  `run-prompts.mjs` (k runs per prompt x surface, retries, error rows) ·
+  `classify.mjs` (mention/citation tagging, citation-role taxonomy, answer-derived
+  consideration set) · `access-checks.mjs` (AI-bot robots rules, live UA probes,
+  Bing/Brave index presence) · `site-checks.mjs` (frozen page sample + scripted
+  onsite facts) · `grade-compute.mjs` (validates grader quotes, floor-gates,
+  computes Performance Scores in code) · `compute-metrics.mjs` ·
+  `score-levers.mjs` (four levers, ~27 anchored elements, importance + priority) ·
+  `build-deck.mjs` (Canva fill tokens) · `prose-lint.mjs` (AI-tell linter,
+  hard-fails em dashes).
+- `lib/` — `surfaces.mjs`, `openrouter.mjs` (surface adapter + pinned judge
+  calls), `rubric.mjs` (the framework encoded: elements, anchors, profiles,
+  importance weights), `dataforseo.mjs` (optional SERP/mentions data, degrades
+  to agent search).
 - `companies/<slug>/` — per-company data. The repo ships only the synthetic
   `northwind/` example; real client runs are gitignored.
-- `.claude/agents/audit-*` — the 8 LLM judgment agents ·
-  `.claude/commands/audit-*` — the phase commands ·
-  `.claude/context/` — framework (methodology) + deck-style (report visual system).
+- `.claude/agents/audit-*` — the LLM judgment agents · `.claude/commands/audit-*`
+  — the phase commands · `.claude/context/` — framework + deck style.
 
 ## Prereqs
 
-- `OPENROUTER_API_KEY` in `.env` (see `.env.example`) — surface queries run
-  Claude + Perplexity + ChatGPT via OpenRouter, web search on, 1-shot.
+- `OPENROUTER_API_KEY` in `.env` (see `.env.example`) — surface queries +
+  pinned-judge calls run through OpenRouter.
+- Optional: `BRAVE_SEARCH_API_KEY` (free tier) for a reliable Brave
+  index-presence check; `DATAFORSEO_LOGIN`/`DATAFORSEO_PASSWORD` for
+  API-backed mention/SERP facts (everything degrades gracefully without them).
 - A Notion workspace is optional: the production system parks the two gates
   there, but the audit runs end to end on local files without it.
 
 ## Notes
 
 - Never average the two tracks. The wedge is the per-answer Performance Score,
-  graded against the brand's own positioning.
+  graded judge-then-score: the grader emits per-criterion verdicts + verbatim
+  quotes (never a number); `grade-compute.mjs` validates quotes, applies the
+  floor gate (named + right entity + no kill-criterion fail), and computes the
+  score in code. Two numbers per track: `blended_avg` and `portrayal_when_named`.
+- Freeze-then-score: evidence gatherers write facts ledgers (URL + date, never
+  scores); `score-levers.mjs` scores over the frozen ledgers, mechanically where
+  possible, judged at temp 0 against written anchors where not.
+- Importance x gap ranks every fix; indeterminate checks land in `verify_first`
+  and are never prescribed. Reddit is measured but never surfaced on deck
+  tables or prescribed as a fix.
 - Brand disambiguation: prep pins the entity on the domain and halts if it
   can't; collision-prone names use "the company X" phrasing — a wrong-entity
   answer is a finding, not a bug.

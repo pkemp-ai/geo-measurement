@@ -18,7 +18,7 @@ A company name + domain (e.g. `Northwind Pay northwindpay.com`) and a slug, pass
 
 ## Step 1 — Pin the exact entity (critical)
 
-Before researching, confirm the right company. Resolve on the **domain**. Write a one-line descriptor ("Northwind Pay — stablecoin payment infrastructure for PSPs, northwindpay.com"). If the name is ambiguous (a common word, or multiple companies share it) and you cannot pin it confidently from the domain, STOP and report the ambiguity — do not guess.
+Before researching, confirm the right company. Resolve on the **domain**. Write a one-line descriptor ("Northwind Pay — stablecoin payouts API for marketplaces, northwindpay.com"). If the name is ambiguous (a common word, or multiple companies share it) and you cannot pin it confidently from the domain, STOP and report the ambiguity — do not guess.
 
 ## Step 2 — Research (public sources)
 
@@ -81,8 +81,8 @@ Also write `companies/<slug>/context.json` for the deterministic compute (classi
 {
   "company": "Northwind Pay",
   "domain": "northwindpay.com",
-  "aliases": ["Northwind Payments", "Northwind"],
-  "category_terms": ["stablecoin infrastructure", "stablecoin payments platform"],
+  "aliases": ["Northwind", "Northwind Payments"],
+  "category_terms": ["stablecoin infrastructure", "tokenization platform"],
   "competitors": [{ "name": "Circle", "domain": "circle.com" }]
 }
 ```

@@ -20,7 +20,7 @@ Spawn the `audit-context-gatherer` subagent with the company name, domain, and s
 
 ## Step 3 — Define prompts
 
-Spawn the `audit-prompt-definer` subagent for the slug. It reads context.md and writes `companies/<slug>/prompts.json` (3 discoverability + 3 assessment + success criteria). Same inline fallback applies.
+Spawn the `audit-prompt-definer` subagent for the slug. It reads context.md and writes `companies/<slug>/prompts.json`: discoverability + assessment prompts, each with structured success criteria (`id` / `text` / `weight` / `kill`) that become the grading rubric, per-prompt `runs`, and the comparison prompts tagged `is_comparison` + `named_rival` for the head-to-head metric. The context gatherer also sets `audit_profile` in context.json (the company archetype: plg_saas, enterprise_b2b, dev_tool, crypto_infra, consumer, services) — it gates which scoring elements apply. Same inline fallback applies.
 
 ## Step 4 — Write to Notion (Gate 1)
 

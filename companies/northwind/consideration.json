@@ -1,0 +1,26 @@
+{
+  "judge_model": "anthropic/claude-sonnet-4.6",
+  "source": "extracted",
+  "synthetic": true,
+  "note": "Fictional sidecar for the public showcase. The consideration set is extracted from the measured category answers, then each candidate is gated by a same-category check; only in-category names count toward share-of-voice. Competitors named are real public companies used only as market context.",
+  "n_candidates": 14,
+  "candidates": ["Circle", "Bridge", "Stripe", "Sphere", "Fireblocks", "Brale", "Zero Hash", "Crossmint", "Rain", "Coinbase", "MoonPay", "Wise", "Airwallex", "Chainlink"],
+  "judgments": [
+    { "name": "Circle", "in_category": true, "reason": "Stablecoin issuer with a payouts/payments network; direct alternative" },
+    { "name": "Bridge", "in_category": true, "reason": "Stablecoin orchestration and payouts API; direct alternative" },
+    { "name": "Stripe", "in_category": true, "reason": "Offers stablecoin payouts within its payments suite" },
+    { "name": "Sphere", "in_category": true, "reason": "Stablecoin payments API; direct alternative" },
+    { "name": "Fireblocks", "in_category": true, "reason": "Enterprise digital-asset infra with payments rails" },
+    { "name": "Brale", "in_category": true, "reason": "Stablecoin issuance and payouts platform" },
+    { "name": "Zero Hash", "in_category": true, "reason": "Crypto-as-a-service infrastructure incl. stablecoin payouts" },
+    { "name": "Crossmint", "in_category": true, "reason": "Stablecoin payments APIs for platforms" },
+    { "name": "Rain", "in_category": true, "reason": "Stablecoin card/payouts infrastructure" },
+    { "name": "Coinbase", "in_category": true, "reason": "Offers business stablecoin payouts via its platform" },
+    { "name": "MoonPay", "in_category": false, "reason": "Consumer on/off-ramp, not a payouts API for platforms" },
+    { "name": "Wise", "in_category": false, "reason": "Fiat cross-border transfers; adjacent category" },
+    { "name": "Airwallex", "in_category": false, "reason": "Fiat business banking/payments; adjacent category" },
+    { "name": "Chainlink", "in_category": false, "reason": "Oracle infrastructure, not a payments provider" }
+  ],
+  "citation_roles": { "method": "llm", "judge_model": "anthropic/claude-sonnet-4.6", "residual_hosts": 19, "resolved": 16 },
+  "generated_at": "2026-06-11T17:05:00.000Z"
+}

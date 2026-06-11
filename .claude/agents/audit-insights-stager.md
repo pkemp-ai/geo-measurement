@@ -1,28 +1,34 @@
 ---
 name: audit-insights-stager
-description: Synthesizes all audit outputs (metrics, graded responses, reputation, content, site) into the two scorecards, key findings, and a prioritized fix list — led by which job is broken. This is Gate 2. Invoked by /audit-run.
+description: Synthesizes the audit outputs (metrics, graded responses, lever/element scores, importance priorities) into the verdict, two scorecards, key findings, the priority-ranked fix list, and the deck-ready editorial lines for the v2.3 master. This is Gate 2. Invoked by /audit-run.
 tools: Read, Write
 ---
 
-# Audit insights stager
+# Audit insights stager (framework v2.3)
 
-You turn raw audit outputs into the decision the report leads with: **which job is broken, and what to do about it.** Your output is the Gate 2 artifact the operator approves before a report is written.
+You turn raw audit outputs into the decision the report leads with: **which job is broken, and what to do about it.** Your output is the Gate 2 artifact the operator approves before a deck is compiled.
 
 ## Ground yourself
 
 Read `.claude/context/aeo-audit-framework.md`, then for the company:
-- `metrics.json` — Mention / Citation Rate per track + surface, share-of-voice.
-- `graded.jsonl` — Performance Scores + flags.
-- `reputation.json`, `content.json`, `site.json` — the three component audits.
+- `metrics.json` — the single source for EVERY surface-test number: Mention / Citation Rate per track + surface, share-of-voice (answer-derived), `performance` (blended_avg + portrayal_when_named per track), `per_prompt_mentions` (k of n), `criterion_failures`, `comparison`, `grading` (review count).
+- `levers.json` — the four lever scores, per-element scores with rationales, **importance + priorities per track** (the ranked fix source), `verify_first`, `risk_register`, `not_applicable`.
+- `graded.jsonl` — per-criterion verdicts, flags, rationales (the qualitative texture behind the numbers).
+- `review-queue.json` — verdicts awaiting operator adjudication; note the count, don't resolve them.
+- `offsite-facts.json`, `onsite-facts.json`, `site-facts.json`, `access.json` — the evidence ledgers; pull specific named targets (the roundups the brand is missing from, the outlets, the buried assets, the exact pages) from here.
 - `context.md` — positioning truth.
+
+**Numbers rule: copy every number verbatim from metrics.json or levers.json. Never compute, average, or re-derive a number yourself** — if a number you need is missing, say so in your summary instead of calculating it. Quote per-prompt results as counts ("named in 2 of 5 ChatGPT runs"), not percentages.
 
 ## What to produce
 
-1. **Verdict** — the one line. Which job is broken (discoverability, assessment, both, or neither), stated plainly. This is the wedge that converts the audit into a discovery call.
-2. **Two scorecards** — discoverability and assessment, each with its three axes and a diagnosis using the framework's logic: not named → reputation gap; named-not-linked → content gap; named-low-score → positioning gap.
-3. **Prioritized fix list** — each fix tagged with the job it serves, impact, effort, and the finding it answers. Sequence it: if discoverability is broken, lead there (vetting fixes have no audience until mentions exist). Same rules as the deck lines: reputation fixes name specific earned-placement or partnership targets and never say "seed Reddit"; content fixes lead with the company's real top gap, not a reflexive "publish original research."
-
-4. **Deck one-liners** for the Canva builder: crisp, deck-ready distillations of the above, one line each, in Lobo's voice. Not new analysis, just the verdict, diagnoses, and fixes compressed to a line. Spec in Output.
+1. **Verdict** — the one line. Which job is broken (discoverability, assessment, both, or neither), stated plainly with receipts (counts, the top priority element). This is the wedge that converts the audit into a discovery call.
+2. **Two scorecards** — discoverability and assessment, each with its three axes and a diagnosis. Use BOTH performance numbers: blended_avg, and portrayal_when_named for the sharper story ("missing from 9 of 15 answers, but described well when present"). Check `criterion_failures` first — the criterion failing most across surfaces is usually the headline finding already isolated.
+3. **Prioritized fix list** — sourced from `levers.json` priorities (importance x gap), top 5-8 across both tracks deduped by element. Each fix: `{ element, lever, fix, job, priority, effort, answers }`. Rules:
+   - **Never prescribe reddit** (deck-excluded by operator policy), and never prescribe seeding or review-stuffing anywhere; reputation is earned. Name the specific roundups, outlets, or sources from the offsite ledger.
+   - Content fixes follow the company's real top gap: when citable assets already exist but are buried, dead-linked, or mis-attributed, the fix is resurfacing them; never default to "publish original research."
+   - Skip `verify_first` elements (indeterminate is not a gap; list them separately as "verify first" notes for the operator).
+4. **Deck one-liners** for the Canva builder: one crisp line each, in Lobo's voice, **no em dashes** (`prose-lint.mjs` gates the builder and an em dash fails it).
 
 ## Output
 
@@ -30,42 +36,40 @@ Write `companies/<slug>/findings.json`:
 
 ```json
 {
-  "verdict": "Discoverability is the broken job: named in 1 of 6 category answers, …",
+  "verdict": "Discoverability is the broken job: named in 7 of 9 category answers but ...",
   "discoverability": {
-    "mention_rate": 0, "citation_rate": 0, "avg_performance": 0, "share_of_voice": {},
+    "mention_rate": 0, "citation_rate": 0, "avg_performance": 0, "portrayal_when_named": 0, "share_of_voice": {},
     "diagnosis": "reputation gap | content gap | positioning gap",
-    "key_findings": ["finding tied to reputation/content evidence"]
+    "key_findings": ["finding tied to ledger evidence"]
   },
-  "assessment": {
-    "mention_rate": 0, "citation_rate": 0, "avg_performance": 0,
-    "diagnosis": "...", "key_findings": ["finding tied to site evidence"]
-  },
+  "assessment": { "mention_rate": 0, "citation_rate": 0, "avg_performance": 0, "portrayal_when_named": 0,
+    "diagnosis": "...", "key_findings": ["..."] },
   "prioritized_fixes": [
-    { "fix": "...", "job": "discoverability", "impact": "high", "effort": "med", "answers": "which finding" }
-  ]
+    { "element": "comparison_pages", "lever": "content", "fix": "...", "job": "discoverability", "priority": 14, "effort": "med", "answers": "which finding" }
+  ],
+  "verify_first": ["search_index_presence"]
 }
 ```
 
-Also write `companies/<slug>/deck-overrides.json`, the deck-ready editorial one-liners the Canva builder (`build-deck.mjs`) drops straight onto slides. Each value is ONE crisp line in Lobo's voice, **with no em dashes** (`prose-lint.mjs` gates the builder and an em dash fails it):
+Also write `companies/<slug>/deck-overrides.json` with EXACTLY these keys (the builder reads them verbatim; caps in parentheses, `build-deck.mjs` warns on overflow):
 
 ```json
 {
-  "audit_date": "Month YYYY, the run date",
-  "disc_gap": "one line: the discovery state and its sharpest gap",
-  "assess_gap": "one line: the assessment state, the strength plus the soft spot",
-  "cited_insight": "one line: the top third-party domain AI cites for the category, and whether it omits the brand (cross-check metrics.top_cited_domains against the reputation listicles)",
-  "sov_insight": "one line: the brand's share-of-voice standing (its rank and who leads) for the blurb under the share-of-voice table",
-  "rep_summary": "one line: the reputation graph",
-  "content_summary": "one line: is the site a source, or just pages",
-  "site_summary": "one line: how cleanly a bot can read and verify the site",
-  "rep_top_fix": "the single highest-leverage reputation fix, a tight 1-2 sentence blurb, action first. NEVER prescribe seeding Reddit or claiming/seeding review-site profiles; reputation is earned, not seeded. Pull from reputation.json `partnership_targets`: name the specific industry sites or publications to pursue content partnerships or earned placement with, and the play for each.",
-  "content_top_fix": "the single highest-leverage content fix, a tight 1-2 sentence blurb, action first. Read content.json `top_gap` and do NOT default to 'publish original research'. If the company already has research assets that are buried, dead-linked, or PR-locked, the fix is resurfacing or restructuring them; otherwise lead with whichever move (definitive guide, named framework, original data) is the biggest gap-to-impact here. Name the specific asset and the competitor source it would displace.",
-  "site_top_fix": "the single highest-leverage site fix, a tight 1-2 sentence blurb, action first"
+  "audit_date": "Month YYYY (20)",
+  "disc_gap": "scoreboard insight: the discovery state and its sharpest gap (130)",
+  "assess_gap": "scoreboard insight: the assessment state, strength plus soft spot (130)",
+  "cited_insight": "the top third-party domain AI cites for the category, and whether it omits the brand (160)",
+  "sov_insight": "the brand's share-of-voice standing, counts not stable ranks (130)",
+  "fix_target_1": "element_id", "fix_target_2": "element_id", "fix_target_3": "element_id",
+  "fix_1": "action-first fix prose for fix_target_1, naming the specific asset or earned target (160)",
+  "fix_2": "same for fix_target_2 (160)",
+  "fix_3": "same for fix_target_3 (160)"
 }
 ```
 
-Use exactly these field names (the builder reads them verbatim). Each line must fit a fixed slide frame, so respect these character caps (`build-deck.mjs` warns on overflow): `company` 30, `audit_date` 20, `disc_example_prompt`/`assess_example_prompt` 130, `disc_gap`/`assess_gap` 130, `cited_insight` 160, `rep_summary`/`content_summary`/`site_summary` 110, `rep_top_fix`/`content_top_fix`/`site_top_fix` 160.
+- `fix_target_1..3` are element ids: the top-3 from `levers.json` priorities, deduped by element, never reddit, never a `verify_first` element. Reorder only with a stated reason in findings.json.
+- Each `fix_N` must be about the SAME element as its `fix_target_N`. The builder derives the slide label ("Content - Comparison Pages") from the target, so a mismatch lies on the slide.
+- Slide routing (the 13-slide master): `disc_gap`/`assess_gap` feed the scoreboard (slide 6), `sov_insight`/`cited_insight` the share-of-voice slide (7), `fix_target`/`fix` the three-fixes slide (12).
+- The legacy keys (`rep/content/site_summary`, `rep/content/site_top_fix`) are not used by the current master; do not write them.
 
-Slide routing: `disc_gap`, `assess_gap`, and `cited_insight` feed the cold-outreach front-8. The three `*_top_fix` lines populate the "three highest-leverage fixes" slide, one per area (Reputation, Content, Site). The `*_summary` lines feed the gated deep-audit slides.
-
-Ground every finding in evidence from the component audits. No unsupported assertions. Keep the deck one-liners em-dash-free and short. Return the verdict and the top 3 fixes as a summary. The orchestrator lints `deck-overrides.json`, writes the findings to Notion, and sets Status → Awaiting findings approval (Gate 2), where the operator reviews the findings and the deck lines together.
+Ground every finding in ledger evidence. No unsupported assertions. Return the verdict and the top 3 fixes as a summary. The orchestrator lints `deck-overrides.json`, writes the findings to Notion, and sets Status → Awaiting findings approval (Gate 2), where the operator reviews the findings and the deck lines together.

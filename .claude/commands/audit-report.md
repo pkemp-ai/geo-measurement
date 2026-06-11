@@ -17,14 +17,15 @@ Read `.claude/context/aeo-audit-framework.md`. Then check, and STOP if any fails
 
 ## Master setup (one-time, operator)
 
-The Canva master ("GEO Audit Report", whose design id you resolve at runtime via `search-designs`) is the template every prospect clones. Each dynamic element's text must be its `[[token]]` placeholder — the exact field names emitted in `companies/<slug>/canva-fill.json`, mapped per slide in the Notion **"Canva Master: Placeholder Map"**. Rules for the master:
-- Keep all share-of-voice rows **neutral** (no baked sage). The fill paints the audited brand's row, because its rank changes per company.
+The Canva master ("AI Visibility Report", 13 slides, whose design id you resolve at runtime via `search-designs`) is the template every prospect clones. Each dynamic element's text must be its `[[token]]` placeholder — the exact field names emitted in `companies/<slug>/canva-fill.json`. The v2.3 token families: scoreboard rates + insights, share-of-voice rows, cited-domain rows, prompt/response counts, `run_disclosure`, per-lever dimension counts (`dim_*`), the best/worst element tables (`best_*` / `worst_*` x4), and the priority-ranked fixes (`fix_label_1..3` + `fix_1..3`). Rules for the master:
+- Keep all share-of-voice rows **neutral** (no baked accent color). The fill paints the audited brand's row, because its rank changes per company.
 - Scoreboard insight lines stay `Insight: [[disc_gap]]` and `Insight: [[assess_gap]]` (static prefix + token).
 - Every rate/score cell, including ones that may be blank for some companies, should carry its `[[token]]` so the cell styling is consistent.
+- Best/worst table rows can legitimately fill as "N/A" when a company's scores skew one direction — by design, not a fill failure.
 
 ## Step 1 — Build the fill data
 
-`node build-deck.mjs <slug>` → writes `companies/<slug>/canva-fill.json` (aborts on any unresolved token; warns on any field over its slide-frame character cap — tighten the offending line in `deck-overrides.json` if so). Then gate the copy:
+`node build-deck.mjs <slug>` → writes `companies/<slug>/canva-fill.json` (aborts if any REQUIRED value is missing — the four insight lines and the three fixes; warns on any field over its slide-frame character cap — tighten the offending line in `deck-overrides.json` if so). Then gate the copy:
 
 `node prose-lint.mjs companies/<slug>/deck-overrides.json` — an em dash fails it (exit 1). Fix the line and rebuild.
 

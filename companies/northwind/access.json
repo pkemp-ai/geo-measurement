@@ -1,0 +1,37 @@
+{
+  "domain": "northwindpay.com",
+  "checked_at": "2026-06-11T16:58:00.000Z",
+  "synthetic": true,
+  "note": "Fictional output for the public showcase. Shape matches access-checks.mjs.",
+  "access_score": 5,
+  "score_rationale": "real robots.txt; no AI search/user bot disallowed; no edge blocks; present in indexes checked",
+  "findings": [],
+  "robots": { "present": true, "valid": true, "status": 200, "content_type": "text/plain", "url": "https://northwindpay.com/robots.txt", "note": "OK" },
+  "bot_rules": {
+    "GPTBot": { "class": "training", "group": "*", "allowed": true, "crawl_delay": null },
+    "OAI-SearchBot": { "class": "search", "group": "*", "allowed": true, "crawl_delay": null },
+    "ChatGPT-User": { "class": "user", "group": "*", "allowed": true, "crawl_delay": null },
+    "ClaudeBot": { "class": "training", "group": "*", "allowed": true, "crawl_delay": null },
+    "Claude-SearchBot": { "class": "search", "group": "*", "allowed": true, "crawl_delay": null },
+    "Claude-User": { "class": "user", "group": "*", "allowed": true, "crawl_delay": null },
+    "PerplexityBot": { "class": "search", "group": "*", "allowed": true, "crawl_delay": null },
+    "Perplexity-User": { "class": "user", "group": "*", "allowed": true, "crawl_delay": null },
+    "Googlebot": { "class": "search", "group": "*", "allowed": true, "crawl_delay": null },
+    "Bingbot": { "class": "search", "group": "*", "allowed": true, "crawl_delay": null },
+    "CCBot": { "class": "training", "group": "*", "allowed": true, "crawl_delay": null }
+  },
+  "ua_probes": {
+    "control": { "status": 200, "blocked": false, "challenge": false, "content_type": "text/html", "final_url": "https://northwindpay.com/" },
+    "GPTBot": { "status": 200, "blocked": false, "challenge": false },
+    "OAI-SearchBot": { "status": 200, "blocked": false, "challenge": false },
+    "ChatGPT-User": { "status": 200, "blocked": false, "challenge": false },
+    "ClaudeBot": { "status": 200, "blocked": false, "challenge": false },
+    "Claude-SearchBot": { "status": 200, "blocked": false, "challenge": false },
+    "PerplexityBot": { "status": 200, "blocked": false, "challenge": false },
+    "Googlebot": { "status": 200, "blocked": false, "challenge": false }
+  },
+  "index_presence": {
+    "bing": { "indexed": null, "count": null, "method": "html", "note": "Bing returned a challenge/CAPTCHA page (indeterminate)", "evidence": "https://www.bing.com/search?q=site%3Anorthwindpay.com" },
+    "brave": { "indexed": true, "count": 17, "method": "api", "note": "Brave API returned 17 result(s)", "evidence": "api.search.brave.com" }
+  }
+}

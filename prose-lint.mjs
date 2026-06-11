@@ -1,8 +1,8 @@
 // Prose linter — deterministic, key-free, no deps. Flags AI-writing tells in
 // report/deck copy. HARD-FAILS (exit 1) on em dashes; everything else is a WARN.
 //
-//   node prose-lint.mjs companies/northwind/outline.md [more files...]
-//   echo "some text" | node prose-lint.mjs        # reads stdin if no files
+//   node audit/prose-lint.mjs companies/northwind/findings.json [more files...]
+//   echo "some text" | node audit/prose-lint.mjs        # reads stdin if no files
 //
 // Intentionally tiny + high-precision: a short, trusted list beats a noisy one.
 // The em dash is the only hard fail because it is the loudest tell and never
