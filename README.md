@@ -1,132 +1,274 @@
-# AEO/GEO Audit System
+# AI Visibility Audit
 
-An agentic system that measures and improves how AI search — ChatGPT, Perplexity, Claude — **discovers, names, and describes a company**, then ships a client-ready report.
+> Lobo Growth's method of measuring and improving how AI represents its clients.
 
-Built by [Lobo Growth](https://lobogrowth.com). This repo is a public showcase of the architecture: the LLM judgment agents, the deterministic measurement harness, and a fully worked **synthetic example** (`companies/northwind/`) so you can see real inputs and outputs without any client data.
-
-> **Why this exists.** "SEO for AI" (AEO = Answer Engine Optimization, GEO = Generative Engine Optimization) is mostly vibes and vanity metrics. This system makes it measurable: it runs real prompts against real answer engines, grades each answer against the brand's own positioning, and separates two failure modes most tools blur together.
+By Patrick Kemp / [Lobo Growth](https://lobogrowth.com). This is the public mirror of the system — no client data. The worked example (`companies/northwind/`) is a fully synthetic company.
 
 ![Agent system](agent-system-preview.png)
 
-## What it does
+## Abstract
 
-1. **Measures** how LLMs represent a company in the prompts its buyers actually use.
-2. **Audits** that company's online presence on the dimensions that influence those answers.
-3. **Recommends** the high-leverage fixes, reasoned from the measurement + audit results.
+An agentic system that:
 
-It runs as three Claude Code orchestrators, each executing a fixed sequence of sub-agents, deterministic scripts, and human-operator approval gates.
+- (a) measures how LLM models represent a company in prompts used by its buyers.
+- (b) audits that company's online presence on dimensions that influence LLM responses.
+- (c) makes strategic recommendations after analyzing LLM responses and audit results.
 
-## Design principles
+The system runs in three phases designed around human approval checkpoints.
 
-What separates this from off-the-shelf AEO tools:
+1. **Research:** core context, prompt, and scoring artifacts are created.
+2. **Analysis:** human-approved prompts and the company's online presence are analyzed.
+3. **Reporting:** human-approved recommendations and findings are compiled into a report.
 
-- **Discovery and Assessment are separated.** Category (unbranded) and branded prompts have different improvement levers and map to different buyer stages. Most tools average them together; this one never does.
-- **A Performance Score, not just mention rate.** Each answer is graded against per-prompt success criteria — *quality* of the portrayal, not merely whether the name appeared.
-- **The audit is quantitative.** The company is scored 0–5 on 28+ dimensions against written rubrics, where most audits are qualitative assessments that need a human to interpret.
-- **Every score is reproducible.** Systems that lean on free-form AI judgment drift run-to-run on the same inputs. Here, agents *judge* (pass/partial/fail with a verbatim quote) and code *scores* — so the arithmetic is deterministic.
-- **Improvement is the point.** A purpose-built reasoning agent recommends bespoke, high-leverage fixes. Most systems stop at the results and leave the "so what" to a human.
+The system runs as three Claude Code-harnessed agents that execute pre-determined sequences of sub-agents, deterministic scripts, and human operator-facing approval requests.
 
-## The one idea: two jobs, never averaged
+## Design Principles
 
-A company can fail AI search in two distinct ways, and the fix for each is different:
+The system has core design principles that differentiate it from existing industry tools:
 
-| Job | Question it answers | "Broken" looks like |
-|-----|--------------------|--------------------|
-| **Discoverability** | When a buyer asks a *category* question ("best stablecoin payouts API?"), is the company **named** at all? | Competitors fill the answer; the company isn't in the room. |
-| **Assessment** | When a buyer asks about the company **by name**, is it described **accurately and favorably**? | Wrong entity, stale facts, miscategorized, hallucinated products. |
+- **Discovery (category, unbranded) and Assessment (branded) prompts separated.**
+  - Most tools group them, but they have different improvement levers and buyer stages.
+- **A performance score is used to measure how a LLM response meets success criteria.**
+  - Most tools focus on mention rate, which doesn't measure the quality of a response.
+- **Audit results are quantitative. A company is scored 0-5 on 28+ dimensions using rubrics.**
+  - Most audits are qualitative assessments that require judgment to interpret.
+- **All scores produced by the system are reproducible.**
+  - Most systems that rely on AI judgement drift from run-to-run with the same inputs.
+- **Improvement is core. A purpose-built reasoning agent recommends high-leverage fixes.**
+  - Most systems stop with the results for humans or separate AI systems to pick up.
 
-The scores are reported **separately and never averaged** — averaging hides which job is broken, and the report leads with that verdict. The wedge metric is a per-answer **Performance Score**: each model answer is graded against the brand's *own* positioning and the prompt's success criteria, not a generic rubric.
+## Research Phase
 
-## Four levers, scored and ranked
+### Phase Summary
 
-The jobs are outcomes; everything a company can fix sorts into four mechanism-ordered levers — before AI can recommend you, it has to **read you, know you, quote you, and hear others vouch for you**:
+Takes the human-provided `"<Company> <domain>"` and produces context artifacts and proposed prompts and scoring rubrics for review by a human operator.
 
-| Lever | Question | Owner |
-|-------|----------|-------|
-| **Access** | Can a machine read you? (bot access, raw-HTML fetchability, the Bing/Brave indexes that gate ChatGPT/Claude search) | Eng |
-| **Identity** | Does AI know who you are? (canonical company/offering pages, entity schema, name binding, Wikipedia) | Brand |
-| **Content** | Are you a source worth quoting? (original research, category guides, comparison pages, freshness) | Content |
-| **Reputation** | Do trusted third parties vouch for you? (earned press, the roundups AI actually cites, validation sources) | PR |
+### Step 0 — Ground
 
-~28 elements with written 0–5 anchor ladders (`lib/rubric.mjs`), gated by a company-archetype profile (enterprise B2B is not judged like PLG SaaS; inapplicable elements are N/A, never zeroed). Three rules keep the numbers defensible:
+Reads `.claude/context/aeo-audit-framework.md` (the methodology) before anything else, so the orchestrator and both subagents reason from the same definitions.
 
-- **Freeze-then-score.** Evidence gathering writes facts ledgers (every fact carries a URL and check date, never a score); scoring is a separate deterministic pass over the frozen ledgers — mechanical in code where possible, judged at temperature 0 against the anchors where not, with evidence quotes validated by substring match.
-- **Judge-then-score.** The performance grader emits per-criterion pass/partial/fail verdicts with quotes — never a number. `grade-compute.mjs` validates every quote against the response text, applies the floor gate (brand named + right entity + no kill-criterion failure), and computes scores in code. Unsure or quote-invalid verdicts queue for human adjudication.
-- **Theory vs practice.** Every element gets an **importance score**: an evidence-tier prior from the published research, blended with the observed citation signal in this company's own measured answers (which roundups did the models actually cite? whose product pages won the category answers?). The blend is practice-led (25/75) after calibration on real audits. **Priority = importance × gap** ranks the fix list — so the #1 fix is provably the thing AI already uses that the company is weakest at.
+### Step 1 — Parse input
 
-See [`.claude/context/aeo-audit-framework.md`](.claude/context/aeo-audit-framework.md) for the full methodology.
+Extracts company name + domain from `$ARGUMENTS`, derives a kebab-case slug. The slug is the primary key for the entire pipeline.
 
-## How it runs — 3 phases, 2 human gates
+### Step 2 — Gather context (`audit-context-gatherer` subagent)
 
-Each phase is a slash command (`.claude/commands/`) that orchestrates agents and scripts, then **stops at a gate** for human review. Nothing auto-advances.
+Tools needed: `Read, Write, WebSearch, WebFetch`.
 
-```
-/audit-prep  <Company> <domain>   Research: pin the entity, draft prompts + rubric   ── Gate 1: approve prompts
-/audit-run   <slug>               Analysis: query surfaces, gather evidence,         ── Gate 2: approve findings
-                                  grade, score, reason out the fixes
-/audit-report <slug>              Reporting: compile the client deck
-```
+- Uses web search and web fetch (~10 searches) to determine the following:
+  - What the company does (in the company's own words)
+  - The company's ICP
+  - Relevant category terms (which seed the discoverability prompts)
+  - Positioning vocabulary (which grounds the prompt grader)
+  - Competitors (which define the share-of-voice set)
+  - The company's founders, key people, trust signals, and pricing
+  - It is required to append a source URL to each material claim to prevent hallucinations.
 
-- **Research** (`/audit-prep`) — researches the company from public sources, pins the exact entity (halts on ambiguity), and drafts the Discoverability + Assessment prompts with per-criterion success rubrics. Parks them for operator approval.
-- **Analysis** (`/audit-run`) — queries the three surfaces (web search on, *k* runs/prompt), gathers the deterministic + evidence ledgers, classifies, grades judge-then-score, scores the four levers with the importance layer, then a reasoning agent decides the fixes. Parks the verdict + scorecards + fix list for review.
-- **Reporting** (`/audit-report`) — fills a hand-built Canva master (unique `[[token]]` placeholders) from the approved data to compile the per-prospect deck.
+**Writes:**
+- `context.md` — human-readable file off a template. This grounds downstream agents.
+- `context.json` — machine-readable file for the deterministic scripts.
 
-## Architecture
+### Step 3 — Define prompts (`audit-prompt-definer` subagent)
 
-The split is deliberate: anything that should be reproducible and cheap is a deterministic script; anything that needs judgment is an agent grounded by a shared methodology file.
+Reads `context.md`. Tools: `Read, Write`
 
-**Deterministic harness** (`.mjs`, Node, native `fetch`, zero dependencies):
+- Produces 6 prompts (configurable), 3 per Discoverability and Assessment tracks:
+  - Avoids overly-structured prompts, jargon, marketing phrases and URLs.
+  - For Discoverability, prompts are drafted in one of three areas, always drafting at least one prompt in each: (1) direct "best `<category>` for `<ICP>`" (2) use-case/job framing (3) and competitor alternatives naming the *incumbent rival*.
+  - For Assessment, prompts are drafted in one of three areas, always drafting at least one prompt in each: (1) open-ended "tell me about the company `<brand>`", (2) fit-for-ICP, (3) **head-to-head** "`<brand>` vs `<rival>`".
+  - Comparison prompts of both types are appended with a tag so they can be analyzed separately later: `is_comparison:true, named_rival:<rival>`.
+- For each prompt, it appends success criteria to score prompt responses:
+  - Each prompt gets 2–4 criteria, each atomic and independently checkable.
+  - This is important for the performance score's later pass/partial/fail check on each.
+  - Assessment **c1 is always the right-entity check**. Head-to-head gets a "presents brand as better-or-equal with real differentiators" criterion that the win/tie/loss verdict keys on. Weights default to 1.
 
-| File | Role |
-|------|------|
-| `run-prompts.mjs` (+ `lib/surfaces.mjs`, `lib/openrouter.mjs`) | Query Claude, Perplexity, and ChatGPT via OpenRouter (web search on, *k* runs/prompt, retries + honest error rows) → `raw_responses.jsonl` |
-| `classify.mjs` | Tag each answer (brand mentioned? own domain cited?), type every citation, and extract the **answer-derived consideration set** for share-of-voice → `classified.jsonl`, `consideration.json` |
-| `access-checks.mjs` | Robots rules per AI-bot class (training vs search vs user-fetch), live user-agent probes, Bing + Brave index presence → `access.json` |
-| `site-checks.mjs` | Frozen page sample + scripted on-site facts (raw-HTML fetchability, crawl coverage, schema, freshness, FAQ/pricing) → `site-facts.json` |
-| `grade-compute.mjs` | Validates every grader quote against the response, applies the floor gate, computes Performance Scores in code → `graded.jsonl`, `review-queue.json` |
-| `compute-metrics.mjs` | Mention/citation rates, per-prompt *k/n* counts, blended + portrayal-when-named performance, share-of-voice → `metrics.json` |
-| `score-elements.mjs` | Scores all ~28 lever elements against the anchored rubric over the frozen ledgers → `levers.json` |
-| `score-importance.mjs` (+ `lib/importance.mjs`) | Blends research prior × observed signal, ranks every gap by importance × (5 − score) → `importance.json` (merged into `levers.json`) |
-| `score-levers.mjs` | Back-compat shim that runs `score-elements` then `score-importance` |
-| `build-findings.mjs` | Deterministic stitch of the run's artifacts into one human-readable Gate 2 doc → `findings.md` |
-| `build-audit-log.mjs` | Per-element rows (score + importance + fix) for the optional Notion Audit Log → `audit-log.json` |
-| `build-deck.mjs` | Flattens everything into the `[[token]]` dataset the client deck is filled from → `canva-fill.json` |
-| `prose-lint.mjs` | High-precision AI-writing-tell linter; hard-fails on em dashes |
-| `lib/rubric.mjs` | The framework encoded: element registry, anchor ladders, archetype profiles, importance weights |
+**Writes:**
+- `prompts.json` (array `disc-1..3`, `assess-1..3`, criterion ids `<prompt-id>.cN`)
 
-**LLM judgment agents** (`.claude/agents/`):
+### Step 4 — Write to Notion (Human Approval Gate 1)
 
-| Agent | Job |
-|-------|-----|
-| `audit-context-gatherer` | Research the company, pin the exact entity + archetype profile → `context.md` |
-| `audit-prompt-definer` | Draft the test prompts + the per-criterion grading rubric (weight/kill) — the Gate 1 artifact |
-| `audit-offsite-evidence` | Facts ledger for the Reputation lever + off-site Identity (press, roundups, validation sources, directories, Wikipedia) — facts with URLs, never scores |
-| `audit-onsite-evidence` | Facts ledger for the Content lever + on-site Identity (guides, comparisons, case studies, research assets) |
-| `audit-performance-grader` | **The wedge** — per-criterion verdicts with verbatim quotes; the score itself is computed in code |
-| `audit-fix-brief` | A run-aware strategy brief fusing the brand's positioning with this run's findings → `fix-context.md` |
-| `audit-fix-strategist` | The reasoning step that **determines** the fixes — bespoke, re-ranked, with named targets from the ledgers → `fixes.json` |
-| `audit-insights-stager` | Synthesizes the verdict, two scorecards, and the priority-ranked fix list (Gate 2) |
-| `audit-report-writer` | Writes the client-facing HTML report, led by the verdict |
+Orchestrator writes to three databases for review by operator, prints a summary and stops:
 
-## The worked example — `companies/northwind/`
+- **Audit Index:** one row per company w/ run slug; Status set to `Awaiting prompt approval`.
+- **Audit Prompts:** one row per prompt, mapped to discoverability or assessment.
+- **Audit Criteria:** one row per criterion so the operator can edit the atomic list.
 
-A complete audit of a **fictional** company, **Northwind Pay** (a stablecoin payments API). Every number, finding, and quote is synthetic — see the banner in `companies/northwind/context.md`. Real companies appear only as market-context competitors.
+## Analysis Phase
 
-Open [`companies/northwind/report.html`](companies/northwind/report.html) in a browser for the final deliverable. The verdict it lands on: **discoverability is broken, assessment is strong** — Northwind is described accurately when asked by name (4.3/5, named in 100% of answers) but barely surfaces in category questions (1.7/5, named in 3 of 9). The supporting artifacts trace every step: `prompts.json` → `raw_responses.jsonl` → `classified.jsonl` + `consideration.json` → `graded.jsonl` → `metrics.json` → `access.json` + **`levers.json`** (the four-lever scorecard with anchors, importance, and the priority ranking) → `findings.json` + `deck-overrides.json`.
+### Phase Summary
 
-## Running it yourself
+Reads the human-approved prompts and scoring rubric from Notion. It submits prompts to LLM models (with web search enabled) using OpenRouter's API. It gathers deterministic evidence about the company's site and reputation.
 
-The agents and commands are designed for [Claude Code](https://claude.com/claude-code). The harness scripts run with plain Node.
+Importantly, no score is ever an LLM's free-form opinion. The response scoring agent produces a pass / partial / fail verdict tied to a verbatim quote pulled from the answer, and a separate deterministic script validates that quote and does the arithmetic.
 
-```bash
-cp .env.example .env          # add your OpenRouter key
-npm run test:surfaces         # re-queries the surfaces for the example slug
-node classify.mjs northwind   # + consideration-set extraction with the key set
-node compute-metrics.mjs northwind
-node score-levers.mjs northwind   # score the four levers + importance ranking
-node build-deck.mjs northwind     # flatten everything into the deck-fill tokens
-```
+It summarizes scorecards, recommendations and a fix list for human review.
+
+### Step 0 — Ground + preconditions
+
+Reads the methodology file, confirms the OpenRouter API key is set (stops if not), and takes the `<slug>` as its key. Every script and subagent in this phase keys off that slug.
+
+### Step 1 — Sync approved prompts + criteria
+
+**Reads:** Notion (Audit Prompts, Audit Criteria)
+
+Rebuilds `prompts.json` from the Notion tables, so any edits the operator made at Gate 1 are used. Pulls prompt text, track, runs, and the comparison tags from Audit Prompts, and one row per criterion (text / weight / kill) from Audit Criteria, grouped back onto each prompt.
+
+**Writes:** `prompts.json` (rebuilt from Notion inputs)
+
+### Step 2 — Run the surfaces under test (`run-prompts.mjs`)
+
+**Reads:** `prompts.json`
+
+- Fires every prompt at three live surfaces using OpenRouter's API, **web search ON** (a grounded answer is the entire point):
+  - **Claude** — Sonnet 4.6
+  - **Perplexity** — sonar-pro
+  - **ChatGPT** — gpt-5-mini
+- Each prompt runs *k* times per its approved run-count because results are non-deterministic.
+- Failed calls retry once, then land as error rows that are **excluded from every denominator** so a transient failure never distorts a rate. The only metered cost in the whole pipeline lives here.
+
+**Writes:** `raw_responses.jsonl`
+
+### Step 3 — Deterministic facts + evidence gathering
+
+Runs the reproducible, key-free fact scripts then evidence agents. **Nothing here assigns a score — these steps only establish facts**, frozen so the scorer (Step 5) reads a fixed ledger.
+
+- `access-checks.mjs`: per-bot-class crawler rules (training vs. search-index vs. user-fetch), live user-agent probes for edge/CDN blocks, and search-index presence (Bing + Brave).
+  - **Writes:** `access.json`
+- `site-checks.mjs`: a frozen page sample plus scripted structure facts (fetchability without JavaScript, crawl coverage, entity schema, content freshness, FAQ/pricing presence).
+  - **Writes:** `site-facts.json`
+- **Evidence subagents** inventory needed on-site assets (`onsite-facts.json`) and the off-site reputation graph — what *others* publish about the brand across review sites, press, directories, communities (`offsite-facts.json`).
+  - **Writes:** `onsite-facts.json`, `offsite-facts.json`
+
+### Step 4 — Classify (`classify.mjs`)
+
+Applies deterministic rules to append a classification schema regarding named entities in each LLM response. It also analyzes whether the competitive set should be re-written based on responses.
+
+- **Deterministic (key-free):** per answer — was the brand named, was its own domain cited, which pre-listed competitors appeared, and a source-type tag per citation (own domain / competitor / review site / listicle / news / reference / etc.).
+  - **Writes:** `classified.jsonl`
+- **LLM-backed:** for each discoverability answer, extracts the consideration set the answer *actually builds* (every option it offers the buyer), then runs each extracted name through a **same-category gate** so share-of-voice reflects who genuinely won the category answer — not just the rivals guessed at prep time. Degrades gracefully to the pre-listed competitors on any failure.
+  - **Writes:** `consideration.json`
+
+### Step 5 — Score and aggregate LLM Responses
+
+The core step for determining AI visibility results, designed so the performance scoring agent doesn't free-form scores that can't be reproduced and drift from run-to-run.
+
+- **Judge** (`audit-performance-grader`, `Read, Write`). Judges each answer against that prompt's approved criteria, emitting **one pass / partial / fail verdict per criterion, each backed by a verbatim quote** and a confidence flag — plus entity/hallucination/gap flags and, on comparison prompts, a separate win / tie / loss verdict. It judges; **it never scores.**
+  - **Writes:** `verdicts.jsonl`
+- **Score** (`grade-compute.mjs`). Validates every quote against the actual response text (an unmatched quote is auto-flagged), applies the **floor gate** (a row earns a quality score only if the brand was named, the right entity, and no kill criterion failed — otherwise it scores 0), and computes the score in code as a weighted pass-fraction. Any unsure verdict routes to the Gate 2 review queue.
+  - **Writes:** `graded.jsonl` + `review-queue.json`
+- **Metrics** (`compute-metrics.mjs`). The single source for every number: mention and citation rates, share-of-voice, per-prompt results as counts (k of n), and **two performance numbers per track — blended, and portrayal-when-named** ("missing from 9 of 15 answers, but described well when present").
+  - **Writes:** `metrics.json`
+
+### Step 6 — Conduct and analyze company audit
+
+The core step for auditing a company's own website and off-site presence to determine its strengths, weaknesses, and the high-leverage fixes to pursue first. Split so deterministic, reproducible scoring stays separate from the reasoning about what to fix: code scores and ranks using the rubric, then a high-reasoning agent decides the fixes.
+
+- **Score** (`score-elements.mjs`). Scores every element of the four-lever rubric (access, identity, content, reputation) against fixed anchors — mechanical checks computed in code from the scripted facts, and judged elements scored by a pinned judge with evidence quotes validated against the frozen facts ledgers. It scores; it doesn't decide what matters.
+  - **Writes:** `levers.json` (element scores + lever and job rollups)
+- **Weight** (`score-importance.mjs`). Determines how much each element matters by blending a **research prior** (the element's evidence tier, fixed across clients) with this run's **observed signal** (how often that element's citation class actually showed up in the answers), then ranks every gap by importance × (5 − score). Reproducible, no LLM calls.
+  - **Writes:** `importance.json` (the importance matrix) + merged back into `levers.json`
+- **Brief** (`audit-fix-brief`, `Read, Write`, high-reasoning model). Writes a run-aware strategy brief that fuses the brand's positioning with this audit's findings — which job is broken, where the leverage is, which competitors own the category — so the strategist reasons from the real situation, not a generic company description.
+  - **Writes:** `fix-context.md`
+- **Strategize** (`audit-fix-strategist`, `Read, Write`, high-reasoning model). The reasoning step that **determines the fixes**. Reasons over the brief + scores + importance matrix + evidence ledgers to produce a bespoke, re-ranked fix set — treating the importance ranking as a prior it can **override with stated reasons**, naming concrete targets (the exact roundups, outlets, partners, pages), and sequencing the work. It decides; it never free-forms a score.
+  - **Writes:** `fixes.json`
+- **Stage** (`audit-insights-stager`, `Read, Write`). Assembles the Gate 2 artifact: the verdict (which job is broken), both scorecards, and the prioritized fix list + deck-ready one-liners **phrased from** the strategist's fixes. It phrases and fits to the presentation's constraints; it does not determine or re-rank the fixes.
+  - **Writes:** `findings.json` + `deck-overrides.json`
+
+### Step 7 — Write to Notion (Human Approval Gate 2)
+
+Orchestrator writes to two databases and creates one artifact for human review and stops:
+
+- **Prompt Scores DB:** one row per prompt × surface × run with all scores and metadata.
+- **Audit Scores DB:** one row per audit element with score, importance, and strategist notes.
+
+## Reporting Phase
+
+### Phase Summary
+
+Turns the human-approved findings into a client-facing Canva deck. The fill is a clean find-and-replace: a hand-built master holds unique `[[token]]` placeholders, a script produces one value per token from the approved data, and each token is swapped for its value on a clone.
+
+### Step 0 — Ground + preconditions
+
+Reads the methodology file and takes `<slug>` as its key. Stops unless all findings are checked as approved in Notion.
+
+### Step 1 — Build the fill data (`build-deck.mjs`)
+
+**Reads:** `deck-overrides.json`, `findings.json`, `metrics.json`, `levers.json`, `context.json`
+
+Resolves one value per `[[token]]` for the whole deck — scoreboard rates and lever scores, the share-of-voice and cited-domain rows, the best/worst dimension tables, and the top-three fixes. **Aborts on any unresolved token** (a deck never ships with a hole); warns on any line over its slide-frame character cap. Then `prose-lint.mjs` gates the copy.
+
+**Writes:** `canva-fill.json`
+
+### Step 2 — Clone the master
+
+**Reads:** the Canva master ("AI Visibility Report")
+
+Copies pages 1–14 of the master into a fresh per-prospect design (`copy-design`).
+
+**Produces:** the prospect's deck clone (`design_id`)
+
+### Step 3 — Open the clone
+
+`start-editing-transaction` returns the clone's element map (element id + current text per page). The transaction id and pages carry into the fill.
+
+### Step 4 — Fill every token
+
+**Reads:** `canva-fill.json`
+
+In one bulk `perform-editing-operations`, swaps each `[[token]]` for its value by find-and-replace on the matching element. Empty values are left unreplaced so padding rows stay blank; repeated tokens like `[[company]]` are replaced in every element that holds them.
+
+### Step 5 — Review, then commit
+
+Renders the data-heavy slides (scoreboard, share-of-voice) via `get-design-thumbnail` for a numbers-and-highlight sanity check, then `commit-editing-transaction` — edits stay draft and are lost until committed.
+
+**Produces:** the compiled deck (edit URL + view URL + `design_id`)
+
+---
+
+## Scripts
+
+Deterministic, key-free Node (native `fetch`, no dependencies). Phase order, top to bottom.
+
+| Script | Does | Writes |
+|--------|------|--------|
+| `run-prompts.mjs` | Fires each prompt at Claude / Perplexity / ChatGPT via OpenRouter, web search on, *k* runs each | `raw_responses.jsonl` |
+| `access-checks.mjs` | Crawler rules per AI-bot class, live UA probes, Bing + Brave index presence | `access.json` |
+| `site-checks.mjs` | Frozen page sample + scripted on-site facts (JS-free fetchability, schema, freshness, FAQ/pricing) | `site-facts.json` |
+| `classify.mjs` | Tags each answer (brand named, own domain cited, competitors, citation source-type) + extracts the answer-derived consideration set | `classified.jsonl`, `consideration.json` |
+| `grade-compute.mjs` | Validates each grader quote, applies the floor gate, computes Performance Scores in code | `graded.jsonl`, `review-queue.json` |
+| `compute-metrics.mjs` | Mention/citation rates, share-of-voice, per-prompt *k/n*, blended + portrayal-when-named | `metrics.json` |
+| `score-elements.mjs` | Scores the ~28 four-lever rubric elements against fixed anchors | `levers.json` |
+| `score-importance.mjs` | Blends research prior × observed signal, ranks gaps by importance × (5 − score) | `importance.json` (merged into `levers.json`) |
+| `score-levers.mjs` | Back-compat shim: runs `score-elements` then `score-importance` | — |
+| `build-findings.mjs` | Stitches the run's artifacts into one human-readable Gate 2 doc | `findings.md` |
+| `build-audit-log.mjs` | Per-element rows (score + importance + fix) for the Notion Audit Log | `audit-log.json` |
+| `build-deck.mjs` | Resolves one value per `[[token]]` for the Canva deck; aborts on any unresolved token | `canva-fill.json` |
+| `prose-lint.mjs` | Flags AI-writing tells in deck/report copy; hard-fails on em dashes | — |
+
+`lib/`: `surfaces.mjs` + `openrouter.mjs` (surface adapter + pinned judge calls), `rubric.mjs` (elements, anchors, profiles, importance weights), `importance.mjs` (importance scoring), `dataforseo.mjs` (optional SERP/mentions data, degrades to agent search), `html.mjs`.
+
+## Agents
+
+LLM judgment, grounded by the shared methodology file. `.claude/agents/`.
+
+| Agent | Does | Writes |
+|-------|------|--------|
+| `audit-context-gatherer` | Researches the company from public sources, pins the entity + archetype profile | `context.md`, `context.json` |
+| `audit-prompt-definer` | Drafts the 6 prompts + per-criterion success rubric | `prompts.json` |
+| `audit-offsite-evidence` | Facts ledger for Reputation + off-site Identity (press, roundups, validation sources, directories, communities) | `offsite-facts.json` |
+| `audit-onsite-evidence` | Facts ledger for Content + on-site Identity (guides, comparisons, case studies, research assets) | `onsite-facts.json` |
+| `audit-performance-grader` | Judges each answer against its criteria: pass/partial/fail + verbatim quote. Never scores | `verdicts.jsonl` |
+| `audit-fix-brief` | Run-aware strategy brief fusing positioning with the run's findings | `fix-context.md` |
+| `audit-fix-strategist` | Decides the fixes: bespoke, re-ranked, with named targets from the ledgers | `fixes.json` |
+| `audit-insights-stager` | Assembles the Gate 2 artifact: verdict, both scorecards, prioritized fixes | `findings.json`, `deck-overrides.json` |
+| `audit-report-writer` | Writes the client-facing HTML report, led by the verdict | `report.html` |
+
+Three commands (`.claude/commands/`) orchestrate the phases: `audit-prep` (Research, Gate 1), `audit-run` (Analysis, Gate 2), `audit-report` (Reporting).
+
+## Worked example
+
+`companies/northwind/` is a complete audit of a fictional company, Northwind Pay. Every number is synthetic. Open [`companies/northwind/report.html`](companies/northwind/report.html) for the final deliverable.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Built by Patrick Kemp / [Lobo Growth](https://lobogrowth.com).
+MIT — see [LICENSE](LICENSE).
