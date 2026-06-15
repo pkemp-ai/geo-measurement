@@ -33,10 +33,16 @@ Then spawn in parallel: `audit-offsite-evidence` and `audit-onsite-evidence` for
 3. `node grade-compute.mjs <slug> --judge "<model>"` → `graded.jsonl` + `review-queue.json` (validates every quote against the response, applies the floor gate, computes each Performance Score in code; unsure/invalid verdicts queue for Gate 2).
 4. `node compute-metrics.mjs <slug>` → `metrics.json` (mention/citation per track + surface, per-prompt k/n counts, blended_avg + portrayal_when_named, criterion failure rates, share-of-voice).
 
-## Step 5 — Score the levers + stage
+## Step 5 — Score, decide the fixes, stage
 
-1. `node score-levers.mjs <slug>` → `levers.json`: the four levers (Access / Identity / Content / Reputation) scored across ~27 elements (mechanical checks in code; judged elements by a pinned judge at temp 0 against anchored rubrics, evidence quotes validated), plus the importance layer (evidence-tier prior x observed citation signal) and the priority ranking (importance x gap).
-2. Spawn `audit-insights-stager` → `findings.json` + `deck-overrides.json` (verdict, two scorecards, priority-ranked fixes with `fix_target_1..3`, and the deck-ready editorial lines). Lint: `node prose-lint.mjs companies/<slug>/deck-overrides.json` — an em dash fails it (exit 1); have the stager rewrite the offending line.
+Scoring and the reasoning about what to fix are split, so reproducible scoring stays separate from judgment:
+
+1. `node score-elements.mjs <slug>` → `levers.json`: the four levers (Access / Identity / Content / Reputation) scored across ~27 elements (mechanical checks in code; judged elements by a pinned judge at temp 0 against anchored rubrics, evidence quotes validated). It scores; it doesn't decide what matters.
+2. `node score-importance.mjs <slug>` → `importance.json` (+ merged back into `levers.json`): blends the evidence-tier prior with this run's observed citation signal, then ranks every gap by importance x (5 − score). Reproducible, no LLM calls. (`node score-levers.mjs <slug>` is a back-compat shim that runs both stages.)
+3. Spawn `audit-fix-brief` → `fix-context.md`: a run-aware strategy brief fusing the brand's positioning with this run's findings (which job is broken, where the leverage is, who owns the category) so the strategist reasons from the real situation.
+4. Spawn `audit-fix-strategist` → `fixes.json`: the reasoning step that **determines** the fixes — bespoke, re-ranked, with named targets pulled from the evidence ledgers. It may override the importance ranking with stated reasons.
+5. Spawn `audit-insights-stager` → `findings.json` + `deck-overrides.json` (verdict, two scorecards, and the prioritized fix list **phrased from** the strategist's fixes, plus the deck-ready editorial lines). Lint: `node prose-lint.mjs companies/<slug>/deck-overrides.json` — an em dash fails it (exit 1); have the stager rewrite the offending line.
+6. `node build-findings.mjs <slug>` → `findings.md`: a deterministic stitch of the run's artifacts into one human-readable Gate 2 review doc. (`build-audit-log.mjs` builds the per-element rows for the optional Notion Audit Log.)
 
 ## Step 6 — Gate 2
 

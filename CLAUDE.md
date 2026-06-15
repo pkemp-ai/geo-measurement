@@ -30,17 +30,22 @@ Each command stops at its gate; nothing auto-advances.
   Bing/Brave index presence) · `site-checks.mjs` (frozen page sample + scripted
   onsite facts) · `grade-compute.mjs` (validates grader quotes, floor-gates,
   computes Performance Scores in code) · `compute-metrics.mjs` ·
-  `score-levers.mjs` (four levers, ~27 anchored elements, importance + priority) ·
-  `build-deck.mjs` (Canva fill tokens) · `prose-lint.mjs` (AI-tell linter,
-  hard-fails em dashes).
+  `score-elements.mjs` (scores ~28 anchored lever elements) ·
+  `score-importance.mjs` (research prior x observed signal, priority ranking;
+  `score-levers.mjs` is a back-compat shim that runs both) ·
+  `build-findings.mjs` (Gate 2 `findings.md`) · `build-audit-log.mjs` (per-element
+  rows for the optional Notion Audit Log) · `build-deck.mjs` (Canva fill tokens) ·
+  `prose-lint.mjs` (AI-tell linter, hard-fails em dashes).
 - `lib/` — `surfaces.mjs`, `openrouter.mjs` (surface adapter + pinned judge
   calls), `rubric.mjs` (the framework encoded: elements, anchors, profiles,
-  importance weights), `dataforseo.mjs` (optional SERP/mentions data, degrades
-  to agent search).
+  importance weights), `importance.mjs` (importance scoring: prior x observed
+  signal), `dataforseo.mjs` (optional SERP/mentions data, degrades to agent search).
 - `companies/<slug>/` — per-company data. The repo ships only the synthetic
   `northwind/` example; real client runs are gitignored.
-- `.claude/agents/audit-*` — the LLM judgment agents · `.claude/commands/audit-*`
-  — the phase commands · `.claude/context/` — framework + deck style.
+- `.claude/agents/audit-*` — the LLM judgment agents (context gatherer, prompt
+  definer, on/off-site evidence, performance grader, fix brief + fix strategist,
+  insights stager, report writer) · `.claude/commands/audit-*` — the phase commands
+  (prep / run / report) · `.claude/context/` — framework + deck style.
 
 ## Prereqs
 

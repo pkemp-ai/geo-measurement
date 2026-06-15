@@ -1,5 +1,5 @@
 ---
-description: Phase 3 of the AEO/GEO audit. Fills the Canva master with a company's approved data to compile the per-prospect deck, then stops. Publishing the deck to the site is a separate /audit-publish step. Take <slug> as $ARGUMENTS. Requires Gate 2 (Status: Reporting) and the Canva MCP connected.
+description: Phase 3 of the AEO/GEO audit. Fills the Canva master with a company's approved data to compile the per-prospect deck, then stops. Take <slug> as $ARGUMENTS. Requires Gate 2 (Status: Reporting) and the Canva MCP connected.
 ---
 
 # /audit-report
@@ -52,11 +52,9 @@ If exactly one `sov_label_N` equals `company`, the element that held `[[sov_labe
 
 `get-design-thumbnail` for the data-heavy pages (5 scoreboard, 6 share-of-voice) and show them. Sanity-check the numbers and the brand highlight. Then `commit-editing-transaction` — edits are draft and lost until committed.
 
-## Step 7 — Finish (hand off to publish)
+## Step 7 — Finish
 
-Compiling the deck is the end of `/audit-report`. Print the clone's edit URL, view URL, and `design_id`, and STOP. Leave the **AEO Audits** row at Status `Reporting`.
-
-Publishing is the separate `/audit-publish` agent: it exports the deck to PNGs, builds the `audit.lobogrowth.com/<slug>` landing page, pushes to Netlify, and sets Report URL + Status `Published`. Do NOT export or touch the site here. Canva export URLs expire in ~24h, so the export belongs with the publish step that downloads them immediately.
+Compiling the deck is the end of `/audit-report`. Print the clone's edit URL, view URL, and `design_id`, and STOP. The compiled deck is the deliverable; how it gets in front of the client (exported PDF, a shared Canva link, or a hosted landing page) is a deployment detail left out of this public pipeline.
 
 ## Notes
 
