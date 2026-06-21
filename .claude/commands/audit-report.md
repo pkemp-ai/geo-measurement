@@ -1,63 +1,37 @@
 ---
-description: Phase 3 of the AEO/GEO audit. Fills the Canva master with a company's approved data to compile the per-prospect deck, then stops. Take <slug> as $ARGUMENTS. Requires Gate 2 (Status: Reporting) and the Canva MCP connected.
+description: Phase 3 of the AEO/GEO audit. Renders the approved findings into a self-contained in-page HTML report, then stops. Take <slug> as $ARGUMENTS. Requires Gate 2 approved.
 ---
 
 # /audit-report
 
-Phase 3. Turns approved findings into the per-prospect Canva deck. Replaces the old HTML report-writer.
+Phase 3. Turns approved findings into the client-facing **in-page HTML report**, then stops. Deterministic and key-free — no Canva, no LLM calls.
 
-The fill is a clean find-and-replace: the master holds `[[token]]` placeholders, `build-deck.mjs` produces the per-company values, and each token is swapped for its value on a clone. Tokens are unique, so there is no position-guessing and no collision between repeated numbers.
+The report is a single flowing page (cover → method → what we measured → performance score → scoreboard → share of voice → audit scores → strengths → gaps → fixes), rendered from the run's data: `build-deck.mjs` resolves the company JSONs into `canva-fill.json` (the flat data contract; the name is legacy from the Canva era), and `build-report.mjs` renders that into `companies/<slug>/report.html`.
 
 ## Step 0 — Ground + preconditions
 
 Read `.claude/context/aeo-audit-framework.md`. Then check, and STOP if any fails:
-- The company's **AEO Audits** row Status = `Reporting` (Gate 2 approved).
-- `companies/<slug>/findings.json` and `companies/<slug>/deck-overrides.json` both exist (from `/audit-run`). If `deck-overrides.json` is missing, the audit predates the deck step — re-run the insights-stager.
-- The Canva MCP is connected.
+- Gate 2 is approved (the operator has signed off on the findings).
+- `companies/<slug>/findings.json` and `companies/<slug>/deck-overrides.json` both exist (from `/audit-run`). If `deck-overrides.json` is missing, the audit predates the editorial step — re-run the insights-stager.
 
-## Master setup (one-time, operator)
+## Step 1 — Build the report data
 
-The Canva master ("AI Visibility Report", 14 pages, whose design id you resolve at runtime via `search-designs`) is the template every prospect clones. Each dynamic element's text must be its `[[token]]` placeholder — the exact field names emitted in `companies/<slug>/canva-fill.json` (lowercase; a `[[Company]]`-style case mismatch silently never fills). Token map by slide: `company` + `audit_date` (1), example prompts (3), scoreboard rates + `disc_gap`/`assess_gap` insights + `run_disclosure` footer (6), share-of-voice + cited-domain rows with their insights (7), `dim_*` counts (9), `score_access/identity/content/reputation` lever rollups (10), `best_lever/dim/rationale_1..4` (11), `worst_lever/dim/rationale_1..4` (12), `fix_label_1..3` + `fix_1..3` (13), static CTA closer (14). The fill may emit fields a given master doesn't carry — unmatched tokens are skipped harmlessly. Rules for the master:
-- Keep all share-of-voice rows **neutral** (no baked accent color). The fill paints the audited brand's row, because its rank changes per company.
-- Scoreboard insight lines stay `Insight: [[disc_gap]]` and `Insight: [[assess_gap]]` (static prefix + token).
-- Every rate/score cell, including ones that may be blank for some companies, should carry its `[[token]]` so the cell styling is consistent.
-- Best/worst table rows can legitimately fill as "N/A" when a company's scores skew one direction — by design, not a fill failure.
+`node build-deck.mjs <slug>` → writes `companies/<slug>/canva-fill.json`, the flat token dataset (rates, scores, share-of-voice, cited domains, best/worst tables, fixes, insights) resolved from `metrics.json` / `levers.json` / `classified.jsonl` / `deck-overrides.json`. It aborts on any missing REQUIRED value. (The file name is legacy from the Canva era; it is now just the report's data contract.)
 
-## Step 1 — Build the fill data
+Gate the editorial copy: `node prose-lint.mjs companies/<slug>/deck-overrides.json` — an em dash fails it (exit 1). Fix the offending line in `deck-overrides.json` and rebuild.
 
-`node build-deck.mjs <slug>` → writes `companies/<slug>/canva-fill.json` (aborts if any REQUIRED value is missing — the four insight lines and the three fixes; warns on any field over its slide-frame character cap — tighten the offending line in `deck-overrides.json` if so). Then gate the copy:
+## Step 2 — Render the report
 
-`node prose-lint.mjs companies/<slug>/deck-overrides.json` — an em dash fails it (exit 1). Fix the line and rebuild.
+`node build-report.mjs <slug>` → `companies/<slug>/report.html` — the standalone, scoped, flowing report. Every number, table, and insight comes from `canva-fill.json`; the static copy (method steps, design principles, metric explainers, lever questions) is constant in the renderer. Aborts if a headline value is missing.
 
-## Step 2 — Clone the master
+## Step 3 — Review
 
-`search-designs` for "AI Visibility Report" → the master design id. `copy-design(master_id, page_numbers [1..14])` → the clone (14 pages; any parked reference pages beyond 14 stay out of every clone). **Never edit the master itself** — always work on the clone.
+Open `companies/<slug>/report.html` in a browser and sanity-check: the verdict reads right, the scoreboard numbers and the audited brand's share-of-voice rows are correct, the best/worst tables and the three fixes are on-voice, and the page reads cleanly as one vertical scroll on a narrow viewport.
 
-## Step 3 — Open the clone
-
-`start-editing-transaction(clone_id)` → the element map (`element_id` + current text per page). Keep the returned `transaction_id` and `pages` array for the next two calls.
-
-## Step 4 — Fill every token
-
-Load `companies/<slug>/canva-fill.json`. In one bulk `perform-editing-operations`, for each field whose value is **non-empty**: find the element whose text contains `[[field]]` and apply `find_and_replace_text(element_id, find "[[field]]", replace value)`.
-- `[[company]]` appears in several elements (cover title, cover subhead, scoreboard title) — replace it in each that contains it.
-- Leave tokens with an empty `""` value unreplaced — those are padding rows and stay blank.
-- This is create-only on the clone; the master is untouched.
-
-## Step 5 — Highlight the audited brand's row
-
-If exactly one `sov_label_N` equals `company`, the element that held `[[sov_label_N]]` is the brand's share-of-voice row. `format_text(color "#A3D9A5")` on that brand cell and its matching `[[sov_pct_N]]` cell. If the company is not in the share-of-voice list (zero category mentions), skip — no highlight.
-
-## Step 6 — Review, then commit
-
-`get-design-thumbnail` for the data-heavy pages (5 scoreboard, 6 share-of-voice) and show them. Sanity-check the numbers and the brand highlight. Then `commit-editing-transaction` — edits are draft and lost until committed.
-
-## Step 7 — Finish
-
-Compiling the deck is the end of `/audit-report`. Print the clone's edit URL, view URL, and `design_id`, and STOP. The compiled deck is the deliverable; how it gets in front of the client (exported PDF, a shared Canva link, or a hosted landing page) is a deployment detail left out of this public pipeline.
+`report.html` is the deliverable. STOP.
 
 ## Notes
 
-- To iterate copy, edit `deck-overrides.json` and re-run from Step 1 — do not re-clone to tweak wording.
-- If the master still holds literal values instead of `[[token]]` placeholders, Step 4 finds nothing. Convert the master once per the placeholder map; the manual element-ID fill is not reliable to automate.
-- Caps live in `build-deck.mjs` (`LIMITS`); they warn, they don't block.
+- To change wording, edit `deck-overrides.json` (insights) and re-run Step 1–2. To change layout, styling, or static copy, edit `build-report.mjs` (the change applies to every future report) and re-run Step 2.
+- `build-report.mjs` reproduces the locked report structure; the only per-company variation is the data in `canva-fill.json` and the brand-row highlight (any share-of-voice row whose label contains the company name renders in the accent color).
+- Everything is deterministic and free — re-render as many times as needed.

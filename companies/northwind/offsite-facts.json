@@ -1,0 +1,106 @@
+{
+  "slug": "northwind",
+  "synthetic": true,
+  "note": "Fictional off-site evidence ledger for the public showcase (v2.6). Facts only, never scores. Every outlet, roundup, profile, date, and quote is invented; URLs are illustrative and do not resolve. Competitors named are real public companies used only as market context.",
+  "captured_at": "2026-06-21T17:10:00.000Z",
+  "method": "agent_search (synthetic showcase data)",
+  "elements": {
+    "press_earned_media": {
+      "outlet_list": ["TechCrunch", "Finextra", "PYMNTS", "Fortune Term Sheet", "CoinDesk", "CNN", "NYT", "WSJ"],
+      "queries": ["site:techcrunch.com \"Northwind Pay\"", "site:finextra.com \"Northwind Pay\"", "site:pymnts.com \"Northwind Pay\"", "site:coindesk.com \"Northwind Pay\"", "site:wsj.com \"Northwind Pay\""],
+      "facts": [
+        { "outlet": "TechCrunch", "title": "Northwind Pay raises $48M to scale stablecoin payouts", "url": "https://techcrunch.com/2026/02/northwind-pay-series-b-stablecoin-payouts/", "date": "2026-02-18", "class": "original", "entity_binding_note": "Correctly bound to the regulated stablecoin payments company." },
+        { "outlet": "Finextra", "title": "Northwind Pay raises 48m Series B", "url": "https://www.finextra.com/newsarticle/northwind-pay-raises-48m-series-b", "date": "2026-02-18", "class": "wire_syndication", "entity_binding_note": "Funding-cycle rewrite." },
+        { "outlet": "PYMNTS", "title": "Northwind Pay extends stablecoin payout infrastructure", "url": "https://www.pymnts.com/news/2026/northwind-pay-stablecoin-payout-infrastructure/", "date": "2026-02-19", "class": "wire_syndication", "entity_binding_note": "Funding-cycle rewrite." },
+        { "outlet": "Fortune Term Sheet", "title": "Term Sheet: the week in fintech raises", "url": "https://fortune.com/2026/02/term-sheet-northwind-pay/", "date": "2026-02-20", "class": "byline", "entity_binding_note": "One-line mention in a roundup of raises." }
+      ],
+      "summary_note": "Coverage is milestone press tied to the Series B. No original category reporting since, and Northwind is not quoted as a source in stablecoin-payments stories. Absent from CNN/NYT/WSJ."
+    },
+    "category_pub_mentions": {
+      "queries": ["best stablecoin payment infrastructure", "best stablecoin payout API 2026", "stablecoin payments API guide", "stablecoin payment providers 2026", "what is stablecoin payment infrastructure"],
+      "cited_pubs_checked": [
+        "https://www.finextra.com/blogposting/31466/top-stablecoin-payment-infrastructure-providers",
+        "https://stablecoininsider.org/stablecoin-payment-providers-in-2026/",
+        "https://www.cobo.com/post/2026-guide-to-the-most-reliable-stablecoin-payments-providers",
+        "https://startupstash.com/top-stablecoin-infrastructure-platforms/"
+      ],
+      "facts": [
+        { "url": "https://www.finextra.com/blogposting/31466/top-stablecoin-payment-infrastructure-providers", "title": "Top stablecoin payment infrastructure providers", "pub_type": "roundup", "query_or_source": "cited by the measured answers", "brand_present": false, "list_position": null, "total_listed": 9, "framing_note": "Leads with Circle, Bridge, Sphere, Fireblocks, Brale. Northwind absent." },
+        { "url": "https://stablecoininsider.org/stablecoin-payment-providers-in-2026/", "title": "Stablecoin payment providers in 2026", "pub_type": "buyer_guide", "query_or_source": "cited by the measured answers", "brand_present": false, "list_position": null, "total_listed": 12, "framing_note": "Names Circle, Bridge, Zero Hash, Crossmint, Brale. Northwind absent." },
+        { "url": "https://www.cobo.com/post/2026-guide-to-the-most-reliable-stablecoin-payments-providers", "title": "2026 guide to the most reliable stablecoin payments providers", "pub_type": "buyer_guide", "query_or_source": "cited by the measured answers", "brand_present": false, "list_position": null, "total_listed": 10, "framing_note": "Custody-leaning list; Fireblocks, Circle, Zero Hash. Northwind absent." },
+        { "url": "https://startupstash.com/top-stablecoin-infrastructure-platforms/", "title": "Top stablecoin infrastructure platforms", "pub_type": "roundup", "query_or_source": "best stablecoin payment infrastructure", "brand_present": false, "list_position": null, "total_listed": 15, "framing_note": "Broad list; still no Northwind entry." },
+        { "url": "https://www.crossmint.com/blog/stablecoin-payment-apis-compared", "title": "Stablecoin payment APIs compared", "pub_type": "comparison", "query_or_source": "stablecoin payments API guide", "brand_present": false, "list_position": null, "total_listed": 8, "framing_note": "Vendor-authored comparison; Northwind not among the eight." }
+      ],
+      "method": "agent_search_fallback",
+      "summary_note": "Northwind is absent from every checked category publication, including all four the measured AI answers cited. This is the single clearest discoverability signal."
+    },
+    "review_sites": {
+      "resolved_sources": ["G2", "Capterra", "TrustRadius", "Messari", "CoinGecko", "CoinMarketCap", "CertiK"],
+      "queries": ["site:g2.com Northwind Pay", "site:capterra.com Northwind Pay", "site:messari.io Northwind Pay", "site:coingecko.com Northwind Pay"],
+      "facts": [
+        { "source": "G2", "listed": false, "rating": null, "review_count": 0, "last_activity_date": null, "url": "https://www.g2.com/products/northwind-pay/reviews" },
+        { "source": "Capterra", "listed": false, "rating": null, "review_count": 0, "last_activity_date": null, "url": "https://www.capterra.com/p/northwind-pay/" },
+        { "source": "TrustRadius", "listed": false, "rating": null, "review_count": 0, "last_activity_date": null, "url": "https://www.trustradius.com/products/northwind-pay/reviews" },
+        { "source": "Messari", "listed": false, "rating": null, "review_count": null, "last_activity_date": null, "url": "https://messari.io/project/northwind-pay" },
+        { "source": "CoinGecko", "listed": false, "rating": null, "review_count": null, "last_activity_date": null, "url": "https://www.coingecko.com/en/companies/northwind-pay" }
+      ],
+      "summary_note": "No usable footprint across the resolved set. No B2B review profiles (all 404) and no crypto-desk coverage. Bridge and Fireblocks carry populated G2 categories."
+    },
+    "reddit": {
+      "queries": ["site:reddit.com \"Northwind Pay\"", "site:reddit.com Northwind stablecoin payouts", "stablecoin payment API reddit"],
+      "facts": [
+        { "subreddit": "r/fintech", "title": "What companies provide stablecoin payment APIs?", "url": "https://www.reddit.com/r/fintech/comments/1swp2zh/what_companies_provide_stablecoin_payment_apis/", "date": "2026-03-09", "affiliation": "organic", "tone": "neutral", "note": "Lists Bridge, Sphere, Circle. Northwind not mentioned." }
+      ],
+      "summary_note": "No naming threads for Northwind in r/fintech, r/cryptocurrency, or r/stablecoins. No negative narrative, just absence."
+    },
+    "podcasts": {
+      "queries": ["Northwind Pay podcast", "Dana Whitfield podcast interview", "Northwind Pay stablecoin payouts episode"],
+      "facts": [
+        { "show": "The Payments Desk", "title": "Stablecoin payouts with Dana Whitfield", "url": "https://open.spotify.com/episode/northwind-pay-whitfield-stablecoin-payouts", "date": "2025-10-14", "transcript_available": false, "guest_intro_binding_note": "Intro correctly frames Northwind as a regulated payouts API." }
+      ],
+      "summary_note": "One regional fintech-payments episode plus a panel writeup. No marquee or generalist shows, no transcripts."
+    },
+    "youtube": {
+      "queries": ["site:youtube.com Northwind Pay", "Northwind Pay demo"],
+      "facts": [
+        { "url": "https://www.youtube.com/@northwindpay", "title": "Northwind Pay (owned channel)", "channel": "Northwind Pay", "owned_or_earned": "owned", "date": "2026-05-01" },
+        { "url": "https://www.youtube.com/watch?v=nwp-payouts-demo", "title": "Send a stablecoin payout in 60 seconds", "channel": "Northwind Pay", "owned_or_earned": "owned", "date": "2026-03-20" }
+      ],
+      "summary_note": "Owned channel with a handful of demo videos and transcripts on. No third-party coverage."
+    },
+    "executive_social": {
+      "queries": ["Dana Whitfield LinkedIn", "Marcus Lindqvist LinkedIn"],
+      "facts": [
+        { "person": "Dana Whitfield (CEO)", "platform": "LinkedIn", "cadence": "weekly", "article_grade_posts": true, "topics": "stablecoin payouts, cross-border settlement, compliance", "followers": 7400, "note": "Substantive weekly posts on payout infrastructure; modest reach." },
+        { "person": "Dana Whitfield (CEO)", "platform": "X", "cadence": "sporadic", "article_grade_posts": false, "topics": "reposts of company news", "followers": null, "note": "Active but announcement-only." }
+      ],
+      "summary_note": "Real founder substance on LinkedIn, modest audience; little long-form thought leadership."
+    },
+    "directory_consistency": {
+      "queries": ["Northwind Pay Crunchbase", "Northwind Pay LinkedIn", "Northwind Pay PitchBook"],
+      "facts": [
+        { "directory": "Crunchbase", "url": "https://www.crunchbase.com/organization/northwind-pay", "descriptor_verbatim": "Regulated stablecoin payment infrastructure for PSPs and fintechs.", "category_label": "FinTech, Payments", "current_y_n": true, "mismatch_note": "Matches the context one-liner." },
+        { "directory": "LinkedIn", "url": "https://www.linkedin.com/company/northwind-pay", "descriptor_verbatim": "Crypto payments startup.", "category_label": "Financial Services", "current_y_n": true, "mismatch_note": "Stale descriptor, off the regulated-infrastructure positioning." },
+        { "directory": "PitchBook", "url": "https://pitchbook.com/profiles/company/northwind-pay", "descriptor_verbatim": "Stablecoin payments infrastructure provider.", "category_label": "Payments", "current_y_n": true, "mismatch_note": "Consistent." }
+      ],
+      "summary_note": "Crunchbase and PitchBook current and consistent; the LinkedIn descriptor lags the positioning."
+    },
+    "wikipedia_wikidata": {
+      "queries": ["Northwind Pay Wikipedia", "Northwind Pay Wikidata", "Northwind Pay IQ.wiki"],
+      "facts": [
+        { "source": "Wikipedia (en)", "exists": false, "url": "https://en.wikipedia.org/wiki/Northwind_Pay", "lede_or_descriptor_verbatim": null, "accuracy_note": "No article. The Northwind term resolves to the Microsoft sample database, a mild disambiguation risk." },
+        { "source": "Wikidata", "exists": true, "url": "https://www.wikidata.org/wiki/Q-northwind-pay-stub", "lede_or_descriptor_verbatim": "stablecoin payments company", "accuracy_note": "Stub only, no linked article." },
+        { "source": "IQ.wiki", "exists": false, "url": "https://iq.wiki/wiki/northwind-pay", "lede_or_descriptor_verbatim": null, "accuracy_note": "No crypto stand-in entry." }
+      ],
+      "summary_note": "Empty encyclopedic slot. Notability likely thin at Series B, so this is a ceiling rather than a quick fix."
+    },
+    "name_binding": {
+      "queries": ["Northwind Pay", "Northwind sample database", "Northwind company"],
+      "facts": [
+        { "namesake": "Northwind sample database", "what_it_is": "Microsoft's classic sample/tutorial database (Northwind Traders).", "url": "https://en.wikipedia.org/wiki/Northwind", "collision_severity_note": "Well-known namesake, but a different category; the disambiguator 'Northwind Pay' separates cleanly and the audit observed zero wrong-entity answers." }
+      ],
+      "summary_note": "Namesake pressure exists but is low-severity; binding holds in practice."
+    }
+  },
+  "risk_register": []
+}

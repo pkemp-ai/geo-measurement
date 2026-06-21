@@ -1,9 +1,10 @@
 // Site checks — deterministic onsite facts for the v2.2 scoring framework.
 // Captures the FROZEN PAGE SAMPLE (canonical Notion page, section 3) and emits
 // scripted facts for: fetchability_no_js, crawl_coverage, entity_schema,
-// content_freshness, branded_faq (presence half), pricing (presence half),
-// answer_structure (structure facts), llms_txt (footnote). The onsite evidence
-// agent reads this file first and layers the judgment-needing inventories on top.
+// content_engine (per-post date, byline, heading structure, marketing density,
+// excerpt), branded_faq (presence half), pricing (presence half), answer_structure
+// (structure facts), llms_txt (footnote). The onsite evidence agent reads this
+// file first and layers the judgment-needing inventories on top.
 //
 // Sample = homepage + about/company + pricing (if any) + up to 4 nav-prominent
 // pages + blog index + last 12 posts. Sampled URLs are recorded; re-runs reuse
@@ -80,6 +81,55 @@ const faqSignals = (html) => ({
   faq_class: /class=["'][^"']*faq/i.test(html),
   details_blocks: (html.match(/<details[\s>]/gi) || []).length,
 });
+
+// ---- per-post extraction (content_engine facts) ----
+const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
+// Publish date as prose ("June 3, 2026") near the top — Webflow-style blogs rarely
+// emit machine-readable datetime, so the visible header date is the reliable signal.
+const proseDate = (text) => {
+  const m = text.slice(0, 2000).match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(20\d{2})\b/i);
+  if (!m) return null;
+  const mo = MONTHS[m[1].toLowerCase()];
+  return mo ? `${m[3]}-${String(mo).padStart(2, "0")}-${String(+m[2]).padStart(2, "0")}` : null;
+};
+const MKT = /\b(industry[- ]?leading|best[- ]in[- ]class|world[- ]?class|cutting[- ]?edge|state[- ]of[- ]the[- ]art|next[- ]?gen(?:eration)?|revolutionary|game[- ]?chang(?:ing|er)|seamless(?:ly)?|frictionless|turnkey|robust|leverages?|empower(?:s|ing)?|unlock(?:s|ing)?|mission[- ]?critical|end[- ]to[- ]end|innovat(?:ive|ion)|transformat(?:ive|ion)|bleeding[- ]?edge|paradigm|synerg\w*|holistic|unparalleled|premier|enterprise[- ]?grade|powerful|effortless|supercharge\w*)\b/gi;
+const marketingDensity = (text) => {
+  const words = text.split(/\s+/).filter(Boolean).length;
+  const hits = (text.match(MKT) || []).length;
+  return { hits, per_1k: words ? Math.round((hits / (words / 1000)) * 10) / 10 : 0, words };
+};
+// Byline presence: structured (author meta / Article.author / rel=author) or a
+// conservative visible "written by" / "By First Last" that is not the company.
+// A real byline = structured author markup (author meta / Article.author /
+// rel=author) or an explicit "written by NAME". The bare "By First Last" pattern
+// is deliberately NOT used: it false-positives on "led by / backed by NAME" in
+// funding and partnership posts, and a citeable byline a model trusts is the
+// structured kind anyway.
+const bylineOf = (html, text, company) => {
+  const metaAuthor = html.match(/<meta[^>]+name=["']author["'][^>]+content=["']([^"']+)["']/i)?.[1];
+  const ldAuthor = /"author"\s*:\s*\{[^]*?"name"\s*:\s*"([^"]+)"/i.exec(html)?.[1] || /"author"\s*:\s*"([^"]{2,})"/i.exec(html)?.[1];
+  const relAuthor = /rel=["']author["']/i.test(html);
+  const written = text.slice(0, 1500).match(/\b(?:written|story|words)\s+by\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})/i);
+  const cand = (metaAuthor || ldAuthor || (written ? written[1] : null) || "").trim() || null;
+  const tok = (company || "").replace(/[^a-z0-9]/gi, "");
+  const isCompany = cand && tok && new RegExp(tok, "i").test(cand.replace(/[^a-z0-9]/gi, ""));
+  const present = Boolean((metaAuthor || ldAuthor || relAuthor || written) && !isCompany);
+  return { present, author: present ? cand : null };
+};
+// Drop the leading nav/chrome by slicing from where the post title appears.
+// Drop the leading nav/chrome. The <title> echoes the post H1, so the title text
+// appears twice: once at the very top (page title) and again as the body heading
+// after the nav. Slice from the SECOND occurrence to skip the nav.
+const cleanExcerpt = (text, title) => {
+  const head = (title || "").split("|")[0].trim();
+  if (head) {
+    const first = text.indexOf(head);
+    const second = first >= 0 ? text.indexOf(head, first + head.length) : -1;
+    if (second > 0 && second < text.length - 200) return text.slice(second, second + 1200);
+    if (first > 0 && first < text.length - 200) return text.slice(first, first + 1200);
+  }
+  return text.slice(0, 1200);
+};
 
 function analyzePage(url, res) {
   const html = res.html;
@@ -175,7 +225,7 @@ for (const url of sampleUrls) {
 }
 
 if (pages.length <= 1) {
-  console.warn(`!! sample collapsed to ${pages.length} page (no about/pricing/blog/nav pages discovered). content_freshness and coverage facts will be unreliable — a false content_freshness=0 is likely. Check homepage nav parsing and sitemap.xml.`);
+  console.warn(`!! sample collapsed to ${pages.length} page (no about/pricing/blog/nav pages discovered). crawl_coverage and content_engine facts will be unreliable. Check homepage nav parsing and sitemap.xml.`);
 }
 
 // blog: pull last 12 post links from the blog index
@@ -189,7 +239,16 @@ if (blogIndex) {
   for (const p of links) {
     const res = await get(origin + p);
     const a = analyzePage(origin + p, res);
-    posts.push({ url: a.url, status: a.status, title: a.title, dates: a.dates, intro_excerpt: a.intro_excerpt.slice(0, 300), headings: a.headings.slice(0, 6) });
+    const text = stripTags(res.html);
+    posts.push({
+      url: a.url, status: a.status, title: a.title,
+      date: proseDate(text) ?? a.dates.at(-1) ?? null,
+      byline: bylineOf(res.html, text, ctx.company),
+      headings_count: a.headings.length,
+      marketing_density: marketingDensity(text),
+      word_count: text.split(/\s+/).filter(Boolean).length,
+      excerpt: cleanExcerpt(text, a.title),
+    });
     await sleep(150);
   }
 }
@@ -201,7 +260,6 @@ const llmsReal = llms.ok && !/<(!doctype|html)/i.test(llms.html.slice(0, 200));
 // ---- assemble facts per element ----
 const aboutPage = pages.find((p) => aboutPath && p.url.endsWith(aboutPath));
 const pricingPage = pages.find((p) => pricingPath && p.url.endsWith(pricingPath));
-const allDates = [...pages.flatMap((p) => p.dates), ...posts.flatMap((p) => p.dates)].sort();
 
 const facts = {
   slug, domain, captured_at: prior?.captured_at ?? new Date().toISOString(), updated_at: new Date().toISOString(),
@@ -230,14 +288,6 @@ const facts = {
     entity_schema: {
       facts: pages.map((p) => ({ url: p.url, ld_types: p.ld_types, sameAs_count: p.sameAs_count })),
     },
-    content_freshness: {
-      facts: {
-        pages_with_dates: pages.filter((p) => p.dates.length).length + "/" + pages.length,
-        latest_date_on_sample: allDates.at(-1) ?? null,
-        latest_post_date: posts.flatMap((p) => p.dates).sort().at(-1) ?? null,
-        post_dates: posts.map((p) => ({ url: p.url, dates: p.dates })),
-      },
-    },
     branded_faq: {
       facts: pages.map((p) => ({ url: p.url, ...p.faq })),
     },
@@ -248,9 +298,17 @@ const facts = {
       facts: { pricing_page: pricingPage ? { url: pricingPage.url, intro_excerpt: pricingPage.intro_excerpt, headings: pricingPage.headings } : null },
     },
     llms_txt: { facts: { present: llmsReal, status: llms.status }, footnote: true },
-    blog_engine: {
-      facts: { blog_index: blogIndex?.url ?? null, last_posts: posts.map((p) => ({ url: p.url, title: p.title, date: p.dates.at(-1) ?? null, intro_excerpt: p.intro_excerpt })) },
-      note: "composition classification of these 12 posts is the onsite agent's job",
+    content_engine: {
+      facts: {
+        blog_index: blogIndex?.url ?? null,
+        sampled: posts.length,
+        posts: posts.map((p) => ({
+          url: p.url, title: p.title, date: p.date, byline: p.byline,
+          headings_count: p.headings_count, marketing_density: p.marketing_density,
+          word_count: p.word_count, excerpt: p.excerpt,
+        })),
+      },
+      note: "frequency + bylines computed in score-elements (lib/content-engine.mjs); press|substantive classification + perspective/icp/structure/show-dont-tell judged there",
     },
   },
 };
@@ -259,3 +317,4 @@ await writeFile(`${dir}/site-facts.json`, JSON.stringify(facts, null, 2) + "\n")
 console.log(`\nsite-facts -> ${dir}/site-facts.json`);
 console.log(`sample: ${pages.length} pages + ${posts.length} posts | sitemap_real=${facts.elements.crawl_coverage.facts.sitemap_real} | llms.txt=${llmsReal}`);
 console.log(`schema types on sample: ${[...new Set(pages.flatMap((p) => p.ld_types))].join(", ") || "none"}`);
+console.log(`content_engine posts: ${posts.length} | dated ${posts.filter((p) => p.date).length} | bylined ${posts.filter((p) => p.byline?.present).length}`);

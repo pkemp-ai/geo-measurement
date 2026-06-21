@@ -23,7 +23,7 @@
 // (a different "Atlas") from the real brand. The performance grader is
 // authoritative on correct entity; the insights stager reconciles the two.
 //
-//   node audit/classify.mjs northwind
+//   node classify.mjs northwind
 
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
@@ -35,7 +35,7 @@ import { complete } from "./lib/openrouter.mjs";
 const JUDGE_MODEL = process.env.AUDIT_JUDGE_MODEL ?? "anthropic/claude-sonnet-4.6";
 
 const company = process.argv[2];
-if (!company) throw new Error("usage: node audit/classify.mjs <slug>");
+if (!company) throw new Error("usage: node classify.mjs <slug>");
 const root = dirname(fileURLToPath(import.meta.url));
 const dir = `${root}/companies/${company}`;
 
@@ -112,16 +112,84 @@ const out = rows.map((r) => {
 
 // ---- Stage B: answer-derived consideration set, gated by category ----
 
-// Light canonicalization so "Aztec" / "Aztec Network" and "Secret" /
-// "Secret Network" collapse to one share-of-voice entry.
+// Light canonicalization so "Acme" / "Acme Network" and "Globex" /
+// "Globex Labs" collapse to one share-of-voice entry.
 const STOPWORDS = /\b(network|protocol|labs?|inc|incorporated|llc|foundation|the|co)\b/gi;
 const normKey = (s) => String(s).toLowerCase()
   .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, " ")
   .replace(STOPWORDS, " ")
   .replace(/\s+/g, " ").trim();
 
-const brandKeys = new Set(brandNames.map(normKey));            // never count the brand as its own competitor
-const compCanonical = new Map(competitors.map((c) => [normKey(c.name), c.name])); // prefer prep's canonical name on a match
+// Canonical-entity resolution. Exact-key matching split compound surface forms
+// into separate SOV entries — a brand's "<Brand> Vault" escaped the brand
+// exclusion and a parent's "<Parent> Recover" / "<Parent> Control" product names
+// fragmented the parent across three rows. Match the known entities (brand aliases
+// + prep competitors)
+// by PHRASE CONTAINMENT so a parent's products collapse to the parent.
+const brandKeys = [...new Set(brandNames.map(normKey))].filter(Boolean); // brand + its product/alias keys
+const compEntities = competitors.map((c) => ({ key: normKey(c.name), name: c.name })).filter((c) => c.key);
+// Does normalized key `hay` contain the whole known phrase `needle` at token boundaries?
+const phraseHit = (hay, needle) => !!needle && ` ${hay} `.includes(` ${needle} `);
+// Resolve an extracted name to a canonical consideration-set entry.
+// -> null to DROP (empty, or the audited brand / one of its products);
+//    else { key, name, pinned } where pinned = matched a prep competitor (use its canonical name).
+const resolveEntity = (raw) => {
+  const k = normKey(raw);
+  if (!k) return null;
+  if (brandKeys.some((bk) => phraseHit(k, bk))) return null;          // brand or a brand product
+  const comp = compEntities.find((c) => phraseHit(k, c.key));         // a prep competitor or its product
+  if (comp) return { key: comp.key, name: comp.name, pinned: true };
+  return { key: k, name: raw, pinned: false };                        // extracted-only: keep the surface form
+};
+
+// Canonical display name per key: a pinned prep-competitor name wins; otherwise the
+// fullest surface form seen. Shared by the live pass and --recanon.
+const displayFor = (names) => {
+  const m = new Map();
+  for (const n of names) {
+    const res = resolveEntity(n);
+    if (!res) continue;
+    if (res.pinned) { m.set(res.key, res.name); continue; }
+    const prev = m.get(res.key);
+    if (!prev || res.name.length > prev.length) m.set(res.key, res.name);
+  }
+  return m;
+};
+
+// --recanon: deterministic re-pass over a PAST run. Re-resolve the saved
+// consideration sets + candidate list through the current canonicalization, with no
+// OpenRouter calls — the metered work (entity extraction, the category gate, Stage-C
+// citation roles) is already in classified.jsonl / consideration.json and is preserved
+// verbatim. This is how a canonicalization change lands on existing audits for free;
+// follow with `node compute-metrics.mjs <slug>` to rebuild the share-of-voice.
+if (process.argv.includes("--recanon")) {
+  const prior = (await readFile(`${dir}/classified.jsonl`, "utf8")).split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  const sidecar = JSON.parse(await readFile(`${dir}/consideration.json`, "utf8"));
+  const discPrior = prior.filter((r) => r.track === "discoverability" && Array.isArray(r.consideration_set));
+  const display = displayFor([...discPrior.flatMap((r) => r.consideration_set), ...(sidecar.candidates ?? [])]);
+  let drops = 0, merges = 0;
+  for (const r of discPrior) {
+    const seen = new Set(), set = [];
+    for (const e of r.consideration_set) {
+      const res = resolveEntity(e);
+      if (!res) { drops++; continue; }                 // brand / brand product removed from SOV
+      if (seen.has(res.key)) { merges++; continue; }   // fragment folded into its canonical
+      seen.add(res.key);
+      set.push(display.get(res.key) ?? res.name);
+    }
+    r.consideration_set = set;
+  }
+  const candsBefore = (sidecar.candidates ?? []).length;
+  const seenC = new Set(), cands = [];
+  for (const c of (sidecar.candidates ?? [])) { const res = resolveEntity(c); if (!res || seenC.has(res.key)) continue; seenC.add(res.key); cands.push(display.get(res.key) ?? res.name); }
+  sidecar.candidates = cands; sidecar.n_candidates = cands.length;
+  sidecar.recanonicalized_at = new Date().toISOString();
+  await writeFile(`${dir}/classified.jsonl`, prior.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  await writeFile(`${dir}/consideration.json`, JSON.stringify(sidecar, null, 2) + "\n");
+  console.log(`recanon ${company}: ${cands.length} candidates (was ${candsBefore}); ${drops} brand-product occurrence(s) dropped, ${merges} fragment occurrence(s) merged across discoverability rows.`);
+  console.log(`next: node compute-metrics.mjs ${company}`);
+  process.exit(0);
+}
 
 const parseJSON = (text) => {
   const cleaned = String(text).replace(/```json\s*/gi, "").replace(/```/g, "").trim();
@@ -163,14 +231,14 @@ if (process.env.OPENROUTER_API_KEY && discRows.length) {
     }));
 
     // Dedupe candidates across all answers (excluding the brand itself).
-    const candByKey = new Map(); // key -> display name
+    const candByKey = new Map(); // canonical key -> display name
     for (const { ents } of perRow) {
       for (const e of ents) {
-        const k = normKey(e);
-        if (!k || brandKeys.has(k)) continue;
-        if (compCanonical.has(k)) { candByKey.set(k, compCanonical.get(k)); continue; }
-        const prev = candByKey.get(k);
-        candByKey.set(k, prev && prev.length >= e.length ? prev : e); // keep the fullest surface form
+        const r = resolveEntity(e);
+        if (!r) continue;
+        if (r.pinned) { candByKey.set(r.key, r.name); continue; } // prep canonical name wins
+        const prev = candByKey.get(r.key);
+        candByKey.set(r.key, prev && prev.length >= r.name.length ? prev : r.name); // keep the fullest surface form
       }
     }
     const candidates = [...candByKey.values()];
@@ -194,11 +262,11 @@ if (process.env.OPENROUTER_API_KEY && discRows.length) {
       const seen = new Set();
       const set = [];
       for (const e of ents) {
-        const k = normKey(e);
-        if (!k || brandKeys.has(k) || seen.has(k)) continue;
-        if (inCategory.get(k) !== true) continue; // dropped: off-category (or unjudged)
-        seen.add(k);
-        set.push(candByKey.get(k) ?? e);
+        const res = resolveEntity(e);
+        if (!res || seen.has(res.key)) continue;
+        if (inCategory.get(res.key) !== true) continue; // dropped: off-category (or unjudged)
+        seen.add(res.key);
+        set.push(candByKey.get(res.key) ?? res.name);
       }
       r.consideration_set = set;
     }

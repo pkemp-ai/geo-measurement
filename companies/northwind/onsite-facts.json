@@ -1,0 +1,122 @@
+{
+  "slug": "northwind",
+  "synthetic": true,
+  "note": "Fictional on-site evidence ledger for the public showcase (v2.6). Facts only, never scores. All pages, customers, dates, and quotes are invented; URLs are illustrative and do not resolve.",
+  "captured_at": "2026-06-21T17:05:00.000Z",
+  "elements": {
+    "company_home": {
+      "facts": {
+        "about_url": "https://www.northwindpay.com/company",
+        "leadership_named": ["Dana Whitfield, CEO and co-founder", "Marcus Lindqvist, CTO and co-founder"],
+        "founding_facts_present": true,
+        "funding_facts_present": true,
+        "relationship_sentences": [
+          "Northwind Pay is regulated stablecoin payment infrastructure for the platforms that move money.",
+          "Founded in 2021 in New York City, Northwind Pay raised a $48M Series B led by Meridian Capital.",
+          "Customer balances are held with a qualified third-party custodian and kept segregated."
+        ],
+        "where_facts_live_if_not_about": null
+      }
+    },
+    "offering_home": {
+      "facts": [
+        { "name": "Pay-ins", "own_domain_page_url": "https://www.northwindpay.com/pay-ins", "claim_sentence_verbatim": "Accept stablecoins and settle to fiat, or hold onchain, through hosted checkout, virtual accounts, or a direct API.", "satellite_domain_if_any": null },
+        { "name": "Payouts", "own_domain_page_url": "https://www.northwindpay.com/payouts", "claim_sentence_verbatim": "Send single and mass stablecoin payouts with off-ramp to local bank rails in 40+ countries.", "satellite_domain_if_any": null },
+        { "name": "Conversions", "own_domain_page_url": "https://www.northwindpay.com/conversions", "claim_sentence_verbatim": "Convert programmatically between fiat and stablecoins at a quoted FX and spread.", "satellite_domain_if_any": null },
+        { "name": "Wallet and treasury", "own_domain_page_url": "https://www.northwindpay.com/payouts", "claim_sentence_verbatim": null, "satellite_domain_if_any": null },
+        { "name": "Sandbox quickstart", "own_domain_page_url": null, "claim_sentence_verbatim": "Spin up a sandbox and send your first test payout in minutes.", "satellite_domain_if_any": "docs.northwindpay.com" }
+      ],
+      "note": "Only the sandbox/quickstart lives on the docs satellite; it links back to the main domain."
+    },
+    "branded_faq": {
+      "facts": {
+        "faq_url": "https://www.northwindpay.com/faq",
+        "questions_covered": ["What is Northwind Pay?", "Is Northwind Pay regulated?", "What stablecoins does Northwind Pay support?", "Which countries can I pay out to?", "Does Northwind Pay hold custody of funds?"],
+        "questions_missing": ["How does Northwind Pay pricing work?", "Who are typical Northwind Pay customers?", "How does Northwind Pay compare to Bridge?"]
+      }
+    },
+    "original_research_data": {
+      "facts": [
+        { "title": "2025 Stablecoin Payouts Benchmark", "url": "https://www.northwindpay.com/blog/2025-stablecoin-payouts-benchmark", "format": "pdf", "dated": "2025-06-10", "attributed_to": "Northwind Pay", "reachable": true, "recurring_y_n": false, "headline_numbers_verbatim": "Median cross-border stablecoin payout settled in 48 seconds across the corridors we measured." }
+      ],
+      "note": "One reachable on-domain data asset, but a single dated PDF rather than a recurring HTML report or dataset. No /insights or /research hub exists."
+    },
+    "category_guides": {
+      "facts": [
+        { "term": "stablecoin payouts", "guide_url": "https://www.northwindpay.com/blog/what-is-a-stablecoin-payout", "where": "own_domain", "depth_note": "Short explainer, product-adjacent, steers to Talk to sales.", "answer_shaped_y_n": true },
+        { "term": "stablecoin pay-ins and payouts", "guide_url": "https://www.northwindpay.com/blog/pay-ins-vs-payouts-vs-conversions", "where": "own_domain", "depth_note": "Decent primer on the three primitives.", "answer_shaped_y_n": true },
+        { "term": "cross-border stablecoin payouts", "guide_url": "https://www.northwindpay.com/blog/how-cross-border-stablecoin-settlement-works", "where": "own_domain", "depth_note": "Explainer, not a canonical pillar page.", "answer_shaped_y_n": true },
+        { "term": "stablecoin payment infrastructure", "guide_url": null, "where": "none", "depth_note": "No own-domain definitional page owns this head term.", "answer_shaped_y_n": false },
+        { "term": "stablecoin-as-a-service for fintechs", "guide_url": null, "where": "none", "depth_note": "No guide; definitional query resolves to a competitor explainer.", "answer_shaped_y_n": false },
+        { "term": "stablecoin orchestration API", "guide_url": null, "where": "none", "depth_note": "No guide.", "answer_shaped_y_n": false }
+      ]
+    },
+    "comparison_pages": {
+      "facts": [
+        { "rival": "Circle", "covered_y_n": false, "url": null, "format": null, "fresh_y_n": false },
+        { "rival": "Bridge", "covered_y_n": false, "url": null, "format": null, "fresh_y_n": false },
+        { "rival": "Stripe", "covered_y_n": false, "url": null, "format": null, "fresh_y_n": false },
+        { "rival": "Sphere", "covered_y_n": false, "url": null, "format": null, "fresh_y_n": false },
+        { "rival": "Brale", "covered_y_n": false, "url": null, "format": null, "fresh_y_n": false }
+      ],
+      "note": "No dedicated or multi-rival comparison or alternatives pages found on the domain."
+    },
+    "case_studies": {
+      "facts": {
+        "case_studies_hub_url": "https://www.northwindpay.com/customers",
+        "count": 3,
+        "named_customers": ["Latitude Payments", "Harborline", "Tropic Remit"],
+        "anonymized_count": 0,
+        "numeric_results_examples_verbatim": [
+          "Latitude Payments moved marketplace payouts to 41 countries and cut settlement time from 2 days to under a minute.",
+          "Tropic Remit reduced payout costs by 38% switching remittance corridors to Northwind."
+        ],
+        "newest_date": "2025-04-12"
+      },
+      "note": "Named and numeric, but the newest case study is 14 months old and none ties explicitly to the category head terms."
+    },
+    "content_engine": {
+      "facts": {
+        "blog_index": "https://www.northwindpay.com/blog",
+        "classified_posts": [
+          { "url": "https://www.northwindpay.com/blog/what-is-a-stablecoin-payout", "type": "evergreen_answer", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/pay-ins-vs-payouts-vs-conversions", "type": "evergreen_answer", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/conversions-now-support-stablecoin-to-stablecoin", "type": "changelog_release", "aimed_at": "existing_user" },
+          { "url": "https://www.northwindpay.com/blog/why-payouts-are-the-hard-part-of-stablecoins", "type": "thought_leadership", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/northwind-pay-series-b", "type": "company_news", "aimed_at": "existing_user" },
+          { "url": "https://www.northwindpay.com/blog/how-cross-border-stablecoin-settlement-works", "type": "evergreen_answer", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/travel-rule-for-stablecoin-payouts", "type": "evergreen_answer", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/new-payout-corridors-latam", "type": "changelog_release", "aimed_at": "existing_user" },
+          { "url": "https://www.northwindpay.com/blog/choosing-a-stablecoin-payments-provider", "type": "evergreen_answer", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/soc2-type-ii", "type": "company_news", "aimed_at": "existing_user" },
+          { "url": "https://www.northwindpay.com/blog/mpc-wallets-for-platforms", "type": "thought_leadership", "aimed_at": "category_buyer" },
+          { "url": "https://www.northwindpay.com/blog/hiring-head-of-compliance", "type": "company_news", "aimed_at": "existing_user" }
+        ],
+        "mix_note": "Roughly monthly cadence. About half the last 12 are evergreen or thought-leadership aimed at category buyers; the rest are product changelogs and company news. No dedicated insights or research hub."
+      }
+    },
+    "developer_docs": {
+      "facts": {
+        "docs_domains": ["docs.northwindpay.com"],
+        "fetchable": { "docs.northwindpay.com": true },
+        "landing_opens_with_definition_y_n": true,
+        "quotable_definition_verbatim": "Northwind Pay is a single API for stablecoin pay-ins, payouts, and conversions, with custody, licensing, and compliance handled for you."
+      }
+    },
+    "answer_structure": {
+      "facts": [
+        { "url": "https://www.northwindpay.com/", "answer_in_first_30pct_y_n": true, "note": "Opens with the one-line definition before any marketing." },
+        { "url": "https://www.northwindpay.com/payouts", "answer_in_first_30pct_y_n": true, "note": "Lead sentence is a liftable claim with the 40+ countries figure." },
+        { "url": "https://www.northwindpay.com/compliance", "answer_in_first_30pct_y_n": true, "note": "Regulatory summary stated in the first paragraph." }
+      ]
+    },
+    "pricing_transparency": {
+      "facts": {
+        "pricing_model_explained_y_n": false,
+        "what_it_says_verbatim": "Talk to sales for pricing. Get API keys to start building.",
+        "gated_y_n": true,
+        "directional_only_note": "Marketing copy mentions a per-transaction payout fee and an FX spread on conversions, with no minimum on the developer tier, but no structured numbers on any core page."
+      }
+    }
+  }
+}

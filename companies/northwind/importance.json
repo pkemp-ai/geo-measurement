@@ -1,0 +1,1180 @@
+{
+  "slug": "northwind",
+  "company": "Northwind Pay",
+  "profile": {
+    "primary": "plg_saas",
+    "secondary": "crypto_infra"
+  },
+  "synthetic": true,
+  "note": "Fictional importance matrix for the public showcase (v2.6). Projected from levers.json; importance = 25/75 theory-by-practice blend scaled to 1-5, priority = importance x (5 - audit score). All numbers synthetic.",
+  "computed_at": "2026-06-21T17:30:00.000Z",
+  "framework_version": "2.4",
+  "rubric_version": "2.6",
+  "matrix": [
+    {
+      "lever": "access",
+      "dimension": "ai_crawler_access",
+      "job": "Discoverability",
+      "tier": "T1",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 5,
+      "research_importance": 5,
+      "run_importance": null,
+      "blended_importance": 5,
+      "gap": 0,
+      "priority": 0,
+      "local_evidence": {
+        "share": 0.75,
+        "cited": 36,
+        "total": 48,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "access",
+      "dimension": "ai_crawler_access",
+      "job": "Assessment",
+      "tier": "T1",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 5,
+      "research_importance": 5,
+      "run_importance": null,
+      "blended_importance": 5,
+      "gap": 0,
+      "priority": 0,
+      "local_evidence": {
+        "share": 0.81,
+        "cited": 26,
+        "total": 32,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "access",
+      "dimension": "search_index_presence",
+      "job": "Discoverability",
+      "tier": "T1/T2",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 3,
+      "research_importance": 4.2,
+      "run_importance": null,
+      "blended_importance": 4.2,
+      "gap": null,
+      "priority": null,
+      "local_evidence": {
+        "share": 0.75,
+        "cited": 36,
+        "total": 48,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": [
+        "verify_first"
+      ]
+    },
+    {
+      "lever": "access",
+      "dimension": "search_index_presence",
+      "job": "Assessment",
+      "tier": "T1/T2",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 3,
+      "research_importance": 4.2,
+      "run_importance": null,
+      "blended_importance": 4.2,
+      "gap": null,
+      "priority": null,
+      "local_evidence": {
+        "share": 0.81,
+        "cited": 26,
+        "total": 32,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": [
+        "verify_first"
+      ]
+    },
+    {
+      "lever": "access",
+      "dimension": "fetchability_no_js",
+      "job": "Discoverability",
+      "tier": "T1",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 5,
+      "research_importance": 5,
+      "run_importance": null,
+      "blended_importance": 5,
+      "gap": 0,
+      "priority": 0,
+      "local_evidence": {
+        "share": 0.75,
+        "cited": 36,
+        "total": 48,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "access",
+      "dimension": "fetchability_no_js",
+      "job": "Assessment",
+      "tier": "T1",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 5,
+      "research_importance": 5,
+      "run_importance": null,
+      "blended_importance": 5,
+      "gap": 0,
+      "priority": 0,
+      "local_evidence": {
+        "share": 0.81,
+        "cited": 26,
+        "total": 32,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "access",
+      "dimension": "crawl_coverage",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 5,
+      "research_importance": 3.4,
+      "run_importance": null,
+      "blended_importance": 3.4,
+      "gap": 0,
+      "priority": 0,
+      "local_evidence": {
+        "share": 0.81,
+        "cited": 26,
+        "total": 32,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "company_home",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 4,
+      "research_importance": 3.4,
+      "run_importance": 4.5,
+      "blended_importance": 4.2,
+      "gap": 1,
+      "priority": 4.2,
+      "local_evidence": {
+        "share": 0.88,
+        "cited": 28,
+        "total": 32,
+        "classes": [
+          "role:company",
+          "role:home"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "offering_home",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 4,
+      "research_importance": 3.4,
+      "run_importance": 4.5,
+      "blended_importance": 4.2,
+      "gap": 1,
+      "priority": 4.2,
+      "local_evidence": {
+        "share": 0.88,
+        "cited": 28,
+        "total": 32,
+        "classes": [
+          "role:product",
+          "role:home"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "branded_faq",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 3,
+      "research_importance": 3.4,
+      "run_importance": 3,
+      "blended_importance": 3.1,
+      "gap": 2,
+      "priority": 6.2,
+      "local_evidence": {
+        "share": 0.5,
+        "cited": 16,
+        "total": 32,
+        "classes": [
+          "role:faq",
+          "role:company"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "entity_schema",
+      "job": "Assessment",
+      "tier": "T1/T2",
+      "signal": "prior",
+      "basis": "mechanical",
+      "audit_score": 4,
+      "research_importance": 4.2,
+      "run_importance": null,
+      "blended_importance": 4.2,
+      "gap": 1,
+      "priority": 4.2,
+      "local_evidence": {
+        "share": 0.81,
+        "cited": 26,
+        "total": 32,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "name_binding",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "harm",
+      "basis": "judged",
+      "audit_score": 5,
+      "research_importance": 3.4,
+      "run_importance": 1,
+      "blended_importance": 1.6,
+      "gap": 0,
+      "priority": 0,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 9,
+        "classes": [
+          "wrong_entity_rate"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "directory_consistency",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "prior",
+      "basis": "judged",
+      "audit_score": 3,
+      "research_importance": 3.4,
+      "run_importance": null,
+      "blended_importance": 3.4,
+      "gap": 2,
+      "priority": 6.8,
+      "local_evidence": {
+        "share": 0.16,
+        "cited": 5,
+        "total": 32,
+        "classes": [
+          "directory"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "wikipedia_wikidata",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "prior",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": null,
+      "blended_importance": 3.4,
+      "gap": 3,
+      "priority": 10.2,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": [
+          "wikipedia"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "identity",
+      "dimension": "wikipedia_wikidata",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "prior",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": null,
+      "blended_importance": 3.4,
+      "gap": 3,
+      "priority": 10.2,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 32,
+        "classes": [
+          "wikipedia"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "original_research_data",
+      "job": "Discoverability",
+      "tier": "T1",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 5,
+      "run_importance": 1.1,
+      "blended_importance": 2.1,
+      "gap": 3,
+      "priority": 6.3,
+      "local_evidence": {
+        "share": 0.03,
+        "cited": 1,
+        "total": 48,
+        "classes": [
+          "role:research_trust"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "category_guides",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": 1.2,
+      "blended_importance": 1.8,
+      "gap": 3,
+      "priority": 5.4,
+      "local_evidence": {
+        "share": 0.06,
+        "cited": 2,
+        "total": 48,
+        "classes": [
+          "role:guides"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "category_guides",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": 1.1,
+      "blended_importance": 1.7,
+      "gap": 3,
+      "priority": 5.1,
+      "local_evidence": {
+        "share": 0.03,
+        "cited": 1,
+        "total": 32,
+        "classes": [
+          "role:guides"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "comparison_pages",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 1,
+      "research_importance": 3.4,
+      "run_importance": 4,
+      "blended_importance": 3.9,
+      "gap": 4,
+      "priority": 15.6,
+      "local_evidence": {
+        "share": 0.75,
+        "cited": 36,
+        "total": 48,
+        "classes": [
+          "role:comparison",
+          "role:product"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "comparison_pages",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 1,
+      "research_importance": 3.4,
+      "run_importance": 1.4,
+      "blended_importance": 1.9,
+      "gap": 4,
+      "priority": 7.6,
+      "local_evidence": {
+        "share": 0.09,
+        "cited": 3,
+        "total": 32,
+        "classes": [
+          "role:comparison",
+          "role:product"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "case_studies",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 3,
+      "research_importance": 3.4,
+      "run_importance": 1,
+      "blended_importance": 1.6,
+      "gap": 2,
+      "priority": 3.2,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": [
+          "role:case_studies"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "case_studies",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 3,
+      "research_importance": 3.4,
+      "run_importance": 1.4,
+      "blended_importance": 1.9,
+      "gap": 2,
+      "priority": 3.8,
+      "local_evidence": {
+        "share": 0.09,
+        "cited": 3,
+        "total": 32,
+        "classes": [
+          "role:case_studies"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "content_engine",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "composite",
+      "audit_score": 3,
+      "research_importance": 3.4,
+      "run_importance": 1.1,
+      "blended_importance": 1.7,
+      "gap": 2,
+      "priority": 3.4,
+      "local_evidence": {
+        "share": 0.03,
+        "cited": 1,
+        "total": 48,
+        "classes": [
+          "role:blog_news"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "content_engine",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "composite",
+      "audit_score": 3,
+      "research_importance": 3.4,
+      "run_importance": 1.1,
+      "blended_importance": 1.7,
+      "gap": 2,
+      "priority": 3.4,
+      "local_evidence": {
+        "share": 0.03,
+        "cited": 1,
+        "total": 32,
+        "classes": [
+          "role:blog_news"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "answer_structure",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 4,
+      "research_importance": 3.4,
+      "run_importance": 1.1,
+      "blended_importance": 1.7,
+      "gap": 1,
+      "priority": 1.7,
+      "local_evidence": {
+        "share": 0.03,
+        "cited": 1,
+        "total": 48,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "answer_structure",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 4,
+      "research_importance": 3.4,
+      "run_importance": 4.5,
+      "blended_importance": 4.2,
+      "gap": 1,
+      "priority": 4.2,
+      "local_evidence": {
+        "share": 0.88,
+        "cited": 28,
+        "total": 32,
+        "classes": [
+          "vendor_all"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "pricing_transparency",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": 1,
+      "blended_importance": 1.6,
+      "gap": 3,
+      "priority": 4.8,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": [
+          "role:pricing"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "pricing_transparency",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": 1.4,
+      "blended_importance": 1.9,
+      "gap": 3,
+      "priority": 5.7,
+      "local_evidence": {
+        "share": 0.09,
+        "cited": 3,
+        "total": 32,
+        "classes": [
+          "role:pricing"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "developer_docs",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 4,
+      "research_importance": 3.4,
+      "run_importance": 1.1,
+      "blended_importance": 1.7,
+      "gap": 1,
+      "priority": 1.7,
+      "local_evidence": {
+        "share": 0.03,
+        "cited": 1,
+        "total": 48,
+        "classes": [
+          "role:docs"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "content",
+      "dimension": "developer_docs",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 4,
+      "research_importance": 3.4,
+      "run_importance": 1.2,
+      "blended_importance": 1.8,
+      "gap": 1,
+      "priority": 1.8,
+      "local_evidence": {
+        "share": 0.06,
+        "cited": 2,
+        "total": 32,
+        "classes": [
+          "role:docs"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "press_earned_media",
+      "job": "Discoverability",
+      "tier": "T1",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 5,
+      "run_importance": 2,
+      "blended_importance": 2.8,
+      "gap": 3,
+      "priority": 8.4,
+      "local_evidence": {
+        "share": 0.25,
+        "cited": 12,
+        "total": 48,
+        "classes": [
+          "news_press"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "category_pub_mentions",
+      "job": "Discoverability",
+      "tier": "T1",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 1,
+      "research_importance": 5,
+      "run_importance": 3.8,
+      "blended_importance": 4.1,
+      "gap": 4,
+      "priority": 16.4,
+      "local_evidence": {
+        "share": 0.71,
+        "cited": 34,
+        "total": 48,
+        "classes": [
+          "listicle",
+          "explainer"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "reddit",
+      "job": "Discoverability",
+      "tier": "T1",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 1,
+      "research_importance": 5,
+      "run_importance": 1,
+      "blended_importance": 2,
+      "gap": 4,
+      "priority": 8,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": [
+          "reddit"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "podcasts",
+      "job": "Discoverability",
+      "tier": "T2/T3",
+      "signal": "prior",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 2.8,
+      "run_importance": null,
+      "blended_importance": 2.8,
+      "gap": 3,
+      "priority": 8.4,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": []
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "youtube",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 3.4,
+      "run_importance": 1,
+      "blended_importance": 1.6,
+      "gap": 3,
+      "priority": 4.8,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": [
+          "video"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "executive_social",
+      "job": "Discoverability",
+      "tier": "T2/T3",
+      "signal": "prior",
+      "basis": "judged",
+      "audit_score": 3,
+      "research_importance": 2.8,
+      "run_importance": null,
+      "blended_importance": 2.8,
+      "gap": 2,
+      "priority": 5.6,
+      "local_evidence": {
+        "share": 0.04,
+        "cited": 2,
+        "total": 48,
+        "classes": []
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "review_sites",
+      "job": "Discoverability",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 1,
+      "research_importance": 3.4,
+      "run_importance": 1,
+      "blended_importance": 1.6,
+      "gap": 4,
+      "priority": 6.4,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": [
+          "review_site",
+          "validation_domains"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "review_sites",
+      "job": "Assessment",
+      "tier": "T2",
+      "signal": "citation",
+      "basis": "judged",
+      "audit_score": 1,
+      "research_importance": 3.4,
+      "run_importance": 1,
+      "blended_importance": 1.6,
+      "gap": 4,
+      "priority": 6.4,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 32,
+        "classes": [
+          "review_site",
+          "validation_domains"
+        ]
+      },
+      "flags": []
+    },
+    {
+      "lever": "reputation",
+      "dimension": "community_forums",
+      "job": "Discoverability",
+      "tier": "T2-T3",
+      "signal": "prior",
+      "basis": "judged",
+      "audit_score": 2,
+      "research_importance": 2.8,
+      "run_importance": null,
+      "blended_importance": 2.8,
+      "gap": 3,
+      "priority": 8.4,
+      "local_evidence": {
+        "share": 0,
+        "cited": 0,
+        "total": 48,
+        "classes": []
+      },
+      "flags": []
+    }
+  ],
+  "priorities": {
+    "discoverability": [
+      {
+        "element": "category_pub_mentions",
+        "lever": "reputation",
+        "priority": 16.4,
+        "importance": 4.1,
+        "score": 1,
+        "gap": 4
+      },
+      {
+        "element": "comparison_pages",
+        "lever": "content",
+        "priority": 15.6,
+        "importance": 3.9,
+        "score": 1,
+        "gap": 4
+      },
+      {
+        "element": "wikipedia_wikidata",
+        "lever": "identity",
+        "priority": 10.2,
+        "importance": 3.4,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "press_earned_media",
+        "lever": "reputation",
+        "priority": 8.4,
+        "importance": 2.8,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "podcasts",
+        "lever": "reputation",
+        "priority": 8.4,
+        "importance": 2.8,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "community_forums",
+        "lever": "reputation",
+        "priority": 8.4,
+        "importance": 2.8,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "reddit",
+        "lever": "reputation",
+        "priority": 8,
+        "importance": 2,
+        "score": 1,
+        "gap": 4
+      },
+      {
+        "element": "review_sites",
+        "lever": "reputation",
+        "priority": 6.4,
+        "importance": 1.6,
+        "score": 1,
+        "gap": 4
+      },
+      {
+        "element": "original_research_data",
+        "lever": "content",
+        "priority": 6.3,
+        "importance": 2.1,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "executive_social",
+        "lever": "reputation",
+        "priority": 5.6,
+        "importance": 2.8,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "category_guides",
+        "lever": "content",
+        "priority": 5.4,
+        "importance": 1.8,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "pricing_transparency",
+        "lever": "content",
+        "priority": 4.8,
+        "importance": 1.6,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "youtube",
+        "lever": "reputation",
+        "priority": 4.8,
+        "importance": 1.6,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "content_engine",
+        "lever": "content",
+        "priority": 3.4,
+        "importance": 1.7,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "case_studies",
+        "lever": "content",
+        "priority": 3.2,
+        "importance": 1.6,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "answer_structure",
+        "lever": "content",
+        "priority": 1.7,
+        "importance": 1.7,
+        "score": 4,
+        "gap": 1
+      },
+      {
+        "element": "developer_docs",
+        "lever": "content",
+        "priority": 1.7,
+        "importance": 1.7,
+        "score": 4,
+        "gap": 1
+      }
+    ],
+    "assessment": [
+      {
+        "element": "wikipedia_wikidata",
+        "lever": "identity",
+        "priority": 10.2,
+        "importance": 3.4,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "comparison_pages",
+        "lever": "content",
+        "priority": 7.6,
+        "importance": 1.9,
+        "score": 1,
+        "gap": 4
+      },
+      {
+        "element": "directory_consistency",
+        "lever": "identity",
+        "priority": 6.8,
+        "importance": 3.4,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "review_sites",
+        "lever": "reputation",
+        "priority": 6.4,
+        "importance": 1.6,
+        "score": 1,
+        "gap": 4
+      },
+      {
+        "element": "branded_faq",
+        "lever": "identity",
+        "priority": 6.2,
+        "importance": 3.1,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "pricing_transparency",
+        "lever": "content",
+        "priority": 5.7,
+        "importance": 1.9,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "category_guides",
+        "lever": "content",
+        "priority": 5.1,
+        "importance": 1.7,
+        "score": 2,
+        "gap": 3
+      },
+      {
+        "element": "company_home",
+        "lever": "identity",
+        "priority": 4.2,
+        "importance": 4.2,
+        "score": 4,
+        "gap": 1
+      },
+      {
+        "element": "offering_home",
+        "lever": "identity",
+        "priority": 4.2,
+        "importance": 4.2,
+        "score": 4,
+        "gap": 1
+      },
+      {
+        "element": "entity_schema",
+        "lever": "identity",
+        "priority": 4.2,
+        "importance": 4.2,
+        "score": 4,
+        "gap": 1
+      },
+      {
+        "element": "answer_structure",
+        "lever": "content",
+        "priority": 4.2,
+        "importance": 4.2,
+        "score": 4,
+        "gap": 1
+      },
+      {
+        "element": "case_studies",
+        "lever": "content",
+        "priority": 3.8,
+        "importance": 1.9,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "content_engine",
+        "lever": "content",
+        "priority": 3.4,
+        "importance": 1.7,
+        "score": 3,
+        "gap": 2
+      },
+      {
+        "element": "developer_docs",
+        "lever": "content",
+        "priority": 1.8,
+        "importance": 1.8,
+        "score": 4,
+        "gap": 1
+      }
+    ]
+  },
+  "verify_first": [
+    "search_index_presence"
+  ],
+  "importance_config": {
+    "w_global": 0.25,
+    "w_local": 0.75,
+    "computed_at": "2026-06-21T17:30:00.000Z"
+  }
+}

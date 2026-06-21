@@ -1,9 +1,9 @@
 // Deck fill builder — deterministic, key-free, no deps. Produces
 // companies/<slug>/canva-fill.json: the flat token -> string dataset the Canva
-// master (14 pages) is filled with by
+// master ("AI Visibility Report", 14 pages) is filled with by
 // /audit-report. The old Gamma deck.md path is retired.
 //
-//   node audit/build-deck.mjs <slug>
+//   node build-deck.mjs <slug>
 //
 // Two kinds of token:
 //   - mechanical (rates, scores, SOV, cited domains, prompt counts, dimension
@@ -20,7 +20,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const slug = process.argv[2];
-if (!slug) throw new Error("usage: node audit/build-deck.mjs <slug>");
+if (!slug) throw new Error("usage: node build-deck.mjs <slug>");
 const root = dirname(fileURLToPath(import.meta.url));
 const dir = `${root}/companies/${slug}`;
 const load = async (f) => JSON.parse(await readFile(`${dir}/${f}`, "utf8"));
@@ -108,12 +108,12 @@ const DIM_LABEL = {
   entity_schema: "Entity Schema", name_binding: "Name Binding", directory_consistency: "Directory Consistency",
   wikipedia_wikidata: "Wikipedia & Wikidata",
   original_research_data: "Original Research", category_guides: "Category Guides",
-  comparison_pages: "Comparison Pages", case_studies: "Case Studies", blog_engine: "Blog Engine",
-  answer_structure: "Answer Structure", content_freshness: "Content Freshness",
+  comparison_pages: "Comparison Pages", case_studies: "Case Studies", content_engine: "Content Engine",
+  answer_structure: "Answer Structure",
   pricing_transparency: "Pricing Transparency", developer_docs: "Developer Docs",
-  press_earned_media: "Earned Press", listicles: "Industry Roundups", third_party_validation: "Third-Party Validation",
+  press_earned_media: "Earned Press", category_pub_mentions: "Category Publications", review_sites: "Review Sites",
   reddit: "Reddit", podcasts: "Podcasts", youtube: "YouTube", executive_social: "Executive Social",
-  third_party_mentions: "Third-Party Mentions", community_forums: "Community Forums",
+  community_forums: "Community Forums",
 };
 // Character caps enforced on generated rationale text so it fits its slide frame.
 // rationale: slides 11/12 best/worst tables — ~648px cells render ~55 chars/line,

@@ -75,12 +75,13 @@ differentiators the brand would want a model to use.)
 
 ## Step 4 — Write context.json (machine-readable)
 
-Also write `companies/<slug>/context.json` for the deterministic compute (classify.mjs / compute-metrics.mjs):
+Also write `companies/<slug>/context.json` for the deterministic compute (classify.mjs / compute-metrics.mjs / score-levers.mjs):
 
 ```json
 {
   "company": "Northwind Pay",
   "domain": "northwindpay.com",
+  "audit_profile": { "primary": "enterprise_b2b", "secondary": "crypto_infra" },
   "aliases": ["Northwind", "Northwind Payments"],
   "category_terms": ["stablecoin infrastructure", "tokenization platform"],
   "competitors": [{ "name": "Circle", "domain": "circle.com" }]
@@ -88,6 +89,17 @@ Also write `companies/<slug>/context.json` for the deterministic compute (classi
 ```
 
 `aliases` are name variants for brand-mention matching; `competitors` drive share-of-voice. Keep it tight and accurate.
+
+**`audit_profile` (required, object form).** The company archetype that drives element applicability, third-party source resolution, and conditional elements in run-phase lever scoring. It MUST be an object — `{ "primary": "<key>", "secondary": "<key>"? }`, secondary optional — not a bare string; `score-levers.mjs` throws on anything else. Pick from exactly these keys (canonical list = `PROFILES` in `lib/rubric.mjs`):
+
+- `plg_saas` — self-serve / product-led SaaS (validation: G2 / Capterra / TrustRadius).
+- `enterprise_b2b` — sales-led B2B, contact-sales pricing (Gartner / Forrester / Peer Insights).
+- `dev_tool` — developer tooling / APIs / OSS (GitHub / Product Hunt / Hacker News — community surfaces, NOT G2-class review sites).
+- `crypto_infra` — crypto / blockchain infrastructure (Messari / CoinGecko / CoinMarketCap / CertiK).
+- `consumer` — consumer apps / brands (Trustpilot / app stores).
+- `services` — agencies / professional services (Clutch / G2).
+
+Choose the `primary` from what the company actually is, and add a `secondary` only when a second archetype genuinely applies (e.g. a wallet SDK = `crypto_infra` + `dev_tool`; a regulated stablecoin issuer = `enterprise_b2b` + `crypto_infra`). Don't stack contradictory pairs (e.g. `consumer` + `crypto_infra`). The operator reviews this at Gate 1.
 
 ## Output
 

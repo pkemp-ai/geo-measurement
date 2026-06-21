@@ -17,7 +17,7 @@ importance x gap.
 
 - `/audit-prep <Company> <domain>` → research + pin entity + audit_profile + draft prompts with per-criterion rubric → **Gate 1** (approve prompts + criteria)
 - `/audit-run <slug>` → surfaces (k runs/prompt) + evidence ledgers + classify + judge-then-score grading + lever scoring + importance → **Gate 2** (review findings + adjudicate the review queue)
-- `/audit-report <slug>` → compile the client deck from `canva-fill.json`
+- `/audit-report <slug>` → render the in-page HTML report (`build-deck` → `build-report` → `report.html`)
 
 Each command stops at its gate; nothing auto-advances.
 
@@ -34,17 +34,19 @@ Each command stops at its gate; nothing auto-advances.
   `score-importance.mjs` (research prior x observed signal, priority ranking;
   `score-levers.mjs` is a back-compat shim that runs both) ·
   `build-findings.mjs` (Gate 2 `findings.md`) · `build-audit-log.mjs` (per-element
-  rows for the optional Notion Audit Log) · `build-deck.mjs` (Canva fill tokens) ·
+  rows for the optional Notion Audit Log) · `build-deck.mjs` (report data contract
+  → `canva-fill.json`) · `build-report.mjs` (renders the in-page HTML report) ·
   `prose-lint.mjs` (AI-tell linter, hard-fails em dashes).
 - `lib/` — `surfaces.mjs`, `openrouter.mjs` (surface adapter + pinned judge
   calls), `rubric.mjs` (the framework encoded: elements, anchors, profiles,
-  importance weights), `importance.mjs` (importance scoring: prior x observed
-  signal), `dataforseo.mjs` (optional SERP/mentions data, degrades to agent search).
+  importance weights), `content-engine.mjs` (decomposed Content-lever scorer),
+  `importance.mjs` (importance scoring: prior x observed signal), `dataforseo.mjs`
+  (optional SERP/mentions data, degrades to agent search).
 - `companies/<slug>/` — per-company data. The repo ships only the synthetic
   `northwind/` example; real client runs are gitignored.
 - `.claude/agents/audit-*` — the LLM judgment agents (context gatherer, prompt
   definer, on/off-site evidence, performance grader, fix brief + fix strategist,
-  insights stager, report writer) · `.claude/commands/audit-*` — the phase commands
+  insights stager) · `.claude/commands/audit-*` — the phase commands
   (prep / run / report) · `.claude/context/` — framework + deck style.
 
 ## Prereqs

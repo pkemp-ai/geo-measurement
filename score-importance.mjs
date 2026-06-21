@@ -41,8 +41,10 @@ const graded = await loadJsonl("graded.jsonl");
 
 // 1) compute importance, mutating result (levers.json) in place
 computeImportance(result, { classified, graded, profiles });
+// The importance stage resolves tiers + signal modes from the live rubric (see
+// lib/importance.mjs), so stamp the live versions: the file now reflects them.
 result.framework_version = FRAMEWORK_VERSION;
-result.rubric_version = result.rubric_version ?? RUBRIC_VERSION;
+result.rubric_version = RUBRIC_VERSION;
 await writeFile(`${dir}/levers.json`, JSON.stringify(result, null, 2) + "\n");
 
 // 2) project the standalone importance matrix

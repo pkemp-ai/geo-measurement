@@ -20,6 +20,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { complete } from "./lib/openrouter.mjs";
 import { ELEMENTS, FACTS_SOURCE, VALIDATION_SOURCES, FRAMEWORK_VERSION, RUBRIC_VERSION, PROFILES, applicable } from "./lib/rubric.mjs";
+import { scoreContentEngine } from "./lib/content-engine.mjs";
 
 const JUDGE_MODEL = process.env.AUDIT_JUDGE_MODEL ?? "anthropic/claude-sonnet-4.6";
 const slug = process.argv[2];
@@ -117,20 +118,6 @@ function mechScore(id) {
       if (has("organization") && sameAs > 0 && (has("person") || has("product") || has("article") || has("faqpage"))) s = 5;
       return { score: s, rationale: types.size ? `types on sample: ${[...types].join(", ")}; sameAs links: ${sameAs}` : "zero JSON-LD on the sampled pages" };
     }
-    case "content_freshness": {
-      const f = siteFacts?.elements?.content_freshness?.facts;
-      if (!f) return null;
-      const latest = [f.latest_date_on_sample, f.latest_post_date].filter(Boolean).sort().at(-1);
-      const [d, n] = (f.pages_with_dates ?? "0/1").split("/").map(Number);
-      if (!latest && !d) return { score: 0, rationale: "no machine-readable dates anywhere on the sample" };
-      const ageDays = latest ? Math.floor((Date.now() - new Date(latest)) / 86400000) : 9999;
-      let s; let why;
-      if (ageDays <= 180 && d / n >= 0.3) { s = 5; why = `latest dated content ${latest} (${ageDays}d old), dates on ${f.pages_with_dates} pages`; }
-      else if (ageDays <= 180) { s = 4; why = `fresh blog (${latest}) but commercial pages mostly undated (${f.pages_with_dates})`; }
-      else if (ageDays <= 365) { s = 3; why = `latest dated content ${latest} (${ageDays}d)`; }
-      else { s = 2; why = `stale: latest dated content ${latest} (${ageDays}d)`; }
-      return { score: s, rationale: why };
-    }
     default: return null;
   }
 }
@@ -143,7 +130,11 @@ const parseJSON = (text) => {
   if (s === -1 || e < s) throw new Error("no JSON in judge output");
   return JSON.parse(cleaned.slice(s, e + 1));
 };
-const norm = (s) => String(s).toLowerCase().replace(/\s+/g, " ").trim();
+// Fold smart punctuation (curly quotes, apostrophes, dashes) to ASCII so a verbatim
+// evidence quote isn't rejected over a ' vs ' style difference.
+const norm = (s) => String(s).toLowerCase()
+  .replace(/[‘’′]/g, "'").replace(/[“”″]/g, '"').replace(/[–—]/g, "-")
+  .replace(/\s+/g, " ").trim();
 
 function extraInputs(id) {
   switch (id) {
@@ -158,12 +149,10 @@ function extraInputs(id) {
       const sov = consideration?.judgments?.filter((j) => j.in_category)?.map((j) => j.name) ?? [];
       return { real_rivals_from_answers: sov, prep_competitors: (ctx.competitors ?? []).map((c) => c.name) };
     }
-    case "third_party_validation":
+    case "review_sites":
       return { resolved_sources: [...new Set(profiles.flatMap((p) => VALIDATION_SOURCES[p] ?? []))] };
     case "pricing_transparency":
       return { profile_meaning: profiles[0] === "enterprise_b2b" ? "pricing-model clarity (enterprise)" : profiles[0] === "plg_saas" ? "public parseable numbers" : "judge per anchors for primary profile " + profiles[0] };
-    case "blog_engine":
-      return { last_posts: siteFacts?.elements?.blog_engine?.facts?.last_posts ?? [] };
     default: return {};
   }
 }
@@ -212,7 +201,15 @@ const result = {
 for (const el of ELEMENTS) {
   if (!applicable(el, profiles)) { result.not_applicable.push(el.id); continue; }
   let scored;
-  if (el.check === "mech") {
+  if (el.id === "content_engine") {
+    const facts = siteFacts?.elements?.content_engine?.facts ?? null;
+    if (!facts || !facts.posts?.length) { result.missing_facts.push(el.id); continue; }
+    process.stdout.write(`scoring content_engine ... `);
+    scored = { ...(await scoreContentEngine({ facts, ctx, profiles, complete, model: JUDGE_MODEL })), basis: "composite" };
+    const f = scored.facets ?? {};
+    console.log(scored.score === null ? "FAILED" : `${scored.score}/5 [freq${f.frequency} persp${f.original_perspective} icp${f.icp_fit} byl${f.bylines} struct${f.structure} show${f.show_dont_tell}]${scored.needs_review ? " (needs review)" : ""}`);
+    if (scored.needs_review) result.needs_review.push(el.id);
+  } else if (el.check === "mech") {
     scored = mechScore(el.id);
     if (!scored) { result.missing_facts.push(el.id); continue; }
     scored = { ...scored, basis: "mechanical" };
@@ -247,7 +244,7 @@ result.jobs = {
 // risk register: low community/press scores with negative narratives surface here via offsite facts
 result.risk_register = (offsite?.risk_register ?? []).concat(
   scoredEls.filter((e) => e.score === 0 || e.score === 1)
-    .filter((e) => ["reddit", "community_forums", "third_party_validation"].includes(e.id))
+    .filter((e) => ["reddit", "community_forums", "review_sites"].includes(e.id))
     .map((e) => ({ source: e.id, note: e.rationale }))
 );
 

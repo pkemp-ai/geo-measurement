@@ -183,43 +183,27 @@ Orchestrator writes to two databases and creates one artifact for human review a
 
 ### Phase Summary
 
-Turns the human-approved findings into a client-facing Canva deck. The fill is a clean find-and-replace: a hand-built master holds unique `[[token]]` placeholders, a script produces one value per token from the approved data, and each token is swapped for its value on a clone.
+Renders the human-approved findings into a self-contained, in-page HTML report — deterministic and key-free, no LLM calls. `build-deck.mjs` resolves the company JSONs into a flat data contract (`canva-fill.json`, a legacy name from the retired Canva path), and `build-report.mjs` renders that into `report.html`.
 
 ### Step 0 — Ground + preconditions
 
-Reads the methodology file and takes `<slug>` as its key. Stops unless all findings are checked as approved in Notion.
+Reads the methodology file and takes `<slug>` as its key. Stops unless the findings are approved.
 
-### Step 1 — Build the fill data (`build-deck.mjs`)
+### Step 1 — Build the report data (`build-deck.mjs`)
 
-**Reads:** `deck-overrides.json`, `findings.json`, `metrics.json`, `levers.json`, `context.json`
+**Reads:** `deck-overrides.json`, `findings.json`, `metrics.json`, `levers.json`, `classified.jsonl`, `context.json`
 
-Resolves one value per `[[token]]` for the whole deck — scoreboard rates and lever scores, the share-of-voice and cited-domain rows, the best/worst dimension tables, and the top-three fixes. **Aborts on any unresolved token** (a deck never ships with a hole); warns on any line over its slide-frame character cap. Then `prose-lint.mjs` gates the copy.
+Resolves one value per token for the whole report — scoreboard rates and lever scores, the share-of-voice and cited-domain rows, the best/worst dimension tables, and the top-three fixes. **Aborts on any missing required value.** Then `prose-lint.mjs` gates the editorial copy.
 
-**Writes:** `canva-fill.json`
+**Writes:** `canva-fill.json` (the report's data contract)
 
-### Step 2 — Clone the master
+### Step 2 — Render the report (`build-report.mjs`)
 
-**Reads:** the Canva master ("AI Visibility Report")
+**Reads:** `canva-fill.json`, `context.json`
 
-Copies pages 1–14 of the master into a fresh per-prospect design (`copy-design`).
+Renders the data into one flowing HTML page — cover, method, what we measured, performance score, scoreboard, share of voice, audit scores, strengths, gaps, fixes. Every number and table comes from the data contract; the static copy (method steps, design principles, metric explainers) is constant in the renderer. Aborts if a headline value is missing.
 
-**Produces:** the prospect's deck clone (`design_id`)
-
-### Step 3 — Open the clone
-
-`start-editing-transaction` returns the clone's element map (element id + current text per page). The transaction id and pages carry into the fill.
-
-### Step 4 — Fill every token
-
-**Reads:** `canva-fill.json`
-
-In one bulk `perform-editing-operations`, swaps each `[[token]]` for its value by find-and-replace on the matching element. Empty values are left unreplaced so padding rows stay blank; repeated tokens like `[[company]]` are replaced in every element that holds them.
-
-### Step 5 — Review, then commit
-
-Renders the data-heavy slides (scoreboard, share-of-voice) via `get-design-thumbnail` for a numbers-and-highlight sanity check, then `commit-editing-transaction` — edits stay draft and are lost until committed.
-
-**Produces:** the compiled deck (edit URL + view URL + `design_id`)
+**Writes:** `report.html` — the deliverable, a standalone self-contained page
 
 ---
 
@@ -240,10 +224,11 @@ Deterministic, key-free Node (native `fetch`, no dependencies). Phase order, top
 | `score-levers.mjs` | Back-compat shim: runs `score-elements` then `score-importance` | — |
 | `build-findings.mjs` | Stitches the run's artifacts into one human-readable Gate 2 doc | `findings.md` |
 | `build-audit-log.mjs` | Per-element rows (score + importance + fix) for the Notion Audit Log | `audit-log.json` |
-| `build-deck.mjs` | Resolves one value per `[[token]]` for the Canva deck; aborts on any unresolved token | `canva-fill.json` |
-| `prose-lint.mjs` | Flags AI-writing tells in deck/report copy; hard-fails on em dashes | — |
+| `build-deck.mjs` | Resolves the company JSONs into the flat report data contract; aborts on a missing required value | `canva-fill.json` |
+| `build-report.mjs` | Renders the data contract into the self-contained in-page HTML report | `report.html` |
+| `prose-lint.mjs` | Flags AI-writing tells in the report copy; hard-fails on em dashes | — |
 
-`lib/`: `surfaces.mjs` + `openrouter.mjs` (surface adapter + pinned judge calls), `rubric.mjs` (elements, anchors, profiles, importance weights), `importance.mjs` (importance scoring), `dataforseo.mjs` (optional SERP/mentions data, degrades to agent search), `html.mjs`.
+`lib/`: `surfaces.mjs` + `openrouter.mjs` (surface adapter + pinned judge calls), `rubric.mjs` (elements, anchors, profiles, importance weights), `content-engine.mjs` (the decomposed Content-lever scorer), `importance.mjs` (importance scoring), `dataforseo.mjs` (optional SERP/mentions data, degrades to agent search), `html.mjs`.
 
 ## Agents
 
@@ -259,7 +244,6 @@ LLM judgment, grounded by the shared methodology file. `.claude/agents/`.
 | `audit-fix-brief` | Run-aware strategy brief fusing positioning with the run's findings | `fix-context.md` |
 | `audit-fix-strategist` | Decides the fixes: bespoke, re-ranked, with named targets from the ledgers | `fixes.json` |
 | `audit-insights-stager` | Assembles the Gate 2 artifact: verdict, both scorecards, prioritized fixes | `findings.json`, `deck-overrides.json` |
-| `audit-report-writer` | Writes the client-facing HTML report, led by the verdict | `report.html` |
 
 Three commands (`.claude/commands/`) orchestrate the phases: `audit-prep` (Research, Gate 1), `audit-run` (Analysis, Gate 2), `audit-report` (Reporting).
 

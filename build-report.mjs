@@ -1,20 +1,119 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AI Visibility Report · Northwind Pay</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
-<style id="aeo-base">
+// Report builder — deterministic, key-free, no deps. Renders the flowing in-page
+// AI-visibility report (the vertical successor to the Canva deck) from the same
+// data contract the deck used: companies/<slug>/canva-fill.json (built by
+// build-deck.mjs) + context.json. Writes companies/<slug>/report.html.
+//
+//   node build-report.mjs <slug>
+//
+// All report CSS is scoped under `.aeo-report` and the content lives in a single
+// `<div class="aeo-report">`, so build-page.mjs can lift the scoped <style> and
+// that div straight into templates/landing.html without colliding with the
+// wrapper's own styles. report.html is also a complete, standalone-previewable
+// page (the <style id="aeo-base"> block paints bg/grain/font for that case;
+// build-page.mjs ignores it and lets the landing wrapper provide those).
+//
+// Static copy (method steps, design principles, metric explainers, lever
+// questions, CTA) is constant here. Every number, table, insight, and fix comes
+// from canva-fill.json — change wording in the stager (deck-overrides.json), not
+// here.
+
+import { readFile, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const slug = process.argv[2];
+if (!slug) throw new Error("usage: node build-report.mjs <slug>");
+const root = dirname(fileURLToPath(import.meta.url));
+const dir = `${root}/companies/${slug}`;
+
+let cf, ctx;
+try {
+  cf = JSON.parse(await readFile(`${dir}/canva-fill.json`, "utf8"));
+} catch {
+  console.error(`Missing ${dir}/canva-fill.json — run \`node build-deck.mjs ${slug}\` first.`);
+  process.exit(1);
+}
+try { ctx = JSON.parse(await readFile(`${dir}/context.json`, "utf8")); } catch { ctx = {}; }
+
+const company = cf.company || ctx.company || slug;
+
+// ---- helpers ----
+const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+// Terse rubric rationales arrive as fragments ("no AI bot blocked ..."); present
+// them as sentences. Full sentences (already capitalized + punctuated) pass through.
+const sentence = (s) => {
+  s = String(s ?? "").trim();
+  if (!s) return s;
+  s = s.charAt(0).toUpperCase() + s.slice(1);
+  if (!/[.!?]$/.test(s)) s += ".";
+  return s;
+};
+const splitPct = (v) => {
+  const m = String(v ?? "").trim().match(/^(-?\d+(?:\.\d+)?)\s*(%?)$/);
+  return m ? { n: m[1], u: m[2] || "" } : { n: String(v ?? ""), u: "" };
+};
+const perf1 = (v) => { const n = parseFloat(v); return Number.isFinite(n) ? n.toFixed(1) : String(v ?? ""); };
+const metricPct = (v) => { const { n, u } = splitPct(v); return `${esc(n)}<span class="u">${esc(u)}</span>`; };
+const metricScore = (v) => `${esc(perf1(v))}<span class="u">/ 5</span>`;
+
+const scoreboardFoot = cf.run_disclosure ? `${cf.run_disclosure}.` : "";
+
+// ---- rows ----
+const sovRows = [];
+for (let i = 1; i <= 6; i++) {
+  const label = cf[`sov_label_${i}`];
+  if (!label) continue;
+  const brand = company && String(label).toLowerCase().includes(String(company).toLowerCase());
+  sovRows.push(`            <tr${brand ? ' class="brand"' : ""}><td class="name">${esc(label)}</td><td class="r">${esc(cf[`sov_pct_${i}`])}</td></tr>`);
+}
+const citedRows = [];
+for (let i = 1; i <= 6; i++) {
+  const host = cf[`cited_host_${i}`];
+  if (!host) continue;
+  citedRows.push(`            <tr><td class="name">${esc(host)}</td><td class="r">${esc(cf[`cited_rate_${i}`])}</td></tr>`);
+}
+const naRow = (lever, dim) => !lever || lever === "N/A" || !dim || dim === "N/A";
+const scoreRows = (prefix, pill) => {
+  const out = [];
+  for (let i = 1; i <= 4; i++) {
+    const lever = cf[`${prefix}_lever_${i}`], dim = cf[`${prefix}_dim_${i}`];
+    if (naRow(lever, dim)) continue;
+    out.push(`        <tr><td>${esc(lever)}</td><td class="name">${esc(dim)}</td><td class="r"><span class="pill ${pill}">${esc(cf[`${prefix}_score_${i}`])}</span></td><td>${esc(sentence(cf[`${prefix}_rationale_${i}`]))}</td></tr>`);
+  }
+  return out.join("\n");
+};
+const fixCards = [];
+for (let i = 1; i <= 3; i++) {
+  const text = cf[`fix_${i}`];
+  if (!text) continue;
+  const label = String(cf[`fix_label_${i}`] || "").replace(/\s-\s/g, " · ");
+  fixCards.push(`    <div class="fix"><div class="n">${i}</div><div><div class="lbl">${esc(label)}</div><p>${esc(text)}</p></div></div>`);
+}
+
+// Lever rollup rows (Access / Identity / Content / Reputation). Questions are static.
+const LEVER_ROWS = [
+  { key: "access", nm: "Access", q: "Can a bot read you?" },
+  { key: "identity", nm: "Identity", q: "Does AI know who you are?" },
+  { key: "content", nm: "Content", q: "Are you a source worth citing?" },
+  { key: "reputation", nm: "Reputation", q: "Do other sources vouch for you?" },
+];
+const leverRows = LEVER_ROWS
+  .filter((l) => cf[`score_${l.key}`])
+  .map((l) => `      <div class="lever-score"><div class="lbl"><span class="nm">${l.nm}</span><span class="mn">${l.q}</span></div><div class="sc">${metricScore(cf[`score_${l.key}`])}</div></div>`)
+  .join("\n");
+
+// ---- styles ----
+// Standalone-only: paints body bg/grain/font so report.html previews on its own.
+// build-page.mjs drops this block (the landing wrapper supplies bg/grain/font).
+const AEO_BASE = `
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{margin:0; background:#0F1117; color:#E8EAF0; font-family:"Inter",system-ui,sans-serif; font-weight:400; font-size:16px; line-height:1.65; -webkit-font-smoothing:antialiased; position:relative;}
   body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:99; opacity:0.022;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
-</style>
-<style id="aeo-report-style">
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}`;
+
+// Scoped report styles — lifted verbatim into the landing wrapper by build-page.mjs.
+const AEO_STYLE = `
   .aeo-report{
     --bg:#0F1117; --bg-card:#16181F; --bg-card-2:#1A1D26;
     --fg:#E8EAF0; --fg-dim:#B0B3BF; --muted:#7A7D8A;
@@ -103,19 +202,18 @@
     .aeo-report .g2,.aeo-report .g3,.aeo-report .g4{grid-template-columns:1fr;}
     .aeo-report .board .row{grid-template-columns:1fr; gap:20px;}
     .aeo-report .cover .meta{gap:28px; flex-wrap:wrap;}
-  }
-</style>
-</head>
-<body>
-<div class="aeo-report">
+  }`;
+
+// ---- report body (the .aeo-report div lifted into the wrapper) ----
+const BODY = `<div class="aeo-report">
 
 <!-- COVER -->
 <header class="cover">
   <div class="wrap">
-    <h1>Northwind Pay</h1>
-    <p class="lead">Improving how AI models discover and describe Northwind Pay.</p>
+    <h1>${esc(company)}</h1>
+    <p class="lead">Improving how AI models discover and describe ${esc(company)}.</p>
     <div class="meta">
-      <div><div class="k">Date</div><div class="v">June 2026</div></div>
+      <div><div class="k">Date</div><div class="v">${esc(cf.audit_date)}</div></div>
     </div>
   </div>
 </header>
@@ -157,13 +255,13 @@
         <div class="num">01 · Discovery</div>
         <h3 style="margin-top:10px;">Prompts about your <em>category</em></h3>
         <p>Unbranded prompts buyers use while researching options. Tests whether AI names you at all.</p>
-        <div class="prompt"><div class="q">"best way for a fintech to add stablecoin payouts to customers in multiple countries without building the crypto and compliance stack in-house?"</div></div>
+        <div class="prompt"><div class="q">"${esc(cf.disc_example_prompt)}"</div></div>
       </div>
       <div class="card">
         <div class="num">02 · Assessment</div>
         <h3 style="margin-top:10px;">Prompts about your <em>company</em></h3>
         <p>Branded prompts buyers use while assessing your products. Tests how accurately AI describes you.</p>
-        <div class="prompt"><div class="q">"tell me about the company Northwind Pay, what do they do?"</div></div>
+        <div class="prompt"><div class="q">"${esc(cf.assess_example_prompt)}"</div></div>
       </div>
     </div>
     <div class="grid g3" style="margin-top:18px;">
@@ -201,26 +299,26 @@
 <section>
   <div class="wrap">
     <p class="eyebrow">The scoreboard</p>
-    <h2>Northwind Pay's AI visibility <em>scoreboard.</em></h2>
+    <h2>${esc(company)}'s AI visibility <em>scoreboard.</em></h2>
     <div class="board">
       <span class="cap">Discovery prompts</span>
       <div class="row">
-        <div><div class="label">Mention rate</div><div class="metric">33<span class="u">%</span></div></div>
-        <div><div class="label">Citation rate</div><div class="metric">11<span class="u">%</span></div></div>
-        <div><div class="label">Performance</div><div class="metric">1.7<span class="u">/ 5</span></div></div>
+        <div><div class="label">Mention rate</div><div class="metric">${metricPct(cf.disc_mention)}</div></div>
+        <div><div class="label">Citation rate</div><div class="metric">${metricPct(cf.disc_citation)}</div></div>
+        <div><div class="label">Performance</div><div class="metric">${metricScore(cf.disc_performance)}</div></div>
       </div>
-      <p class="insight">Named in 3 of 9 category answers. The hole: absent from every roundup AI cited to build the stablecoin payouts shortlist.</p>
+      <p class="insight">${esc(cf.disc_gap)}</p>
     </div>
     <div class="board">
       <span class="cap">Assessment prompts</span>
       <div class="row">
-        <div><div class="label">Mention rate</div><div class="metric">100<span class="u">%</span></div></div>
-        <div><div class="label">Citation rate</div><div class="metric">89<span class="u">%</span></div></div>
-        <div><div class="label">Performance</div><div class="metric">4.3<span class="u">/ 5</span></div></div>
+        <div><div class="label">Mention rate</div><div class="metric">${metricPct(cf.assess_mention)}</div></div>
+        <div><div class="label">Citation rate</div><div class="metric">${metricPct(cf.assess_citation)}</div></div>
+        <div><div class="label">Performance</div><div class="metric">${metricScore(cf.assess_performance)}</div></div>
       </div>
-      <p class="insight">Accurate and favorable, named every time with the site cited 89%. The by-name comparison questions still go unanswered on-domain.</p>
+      <p class="insight">${esc(cf.assess_gap)}</p>
     </div>
-    <p class="footnote">18 responses across 3 AI surfaces.</p>
+    <p class="footnote">${esc(scoreboardFoot)}</p>
   </div>
 </section>
 
@@ -235,30 +333,20 @@
           <caption>Most-named providers</caption>
           <thead><tr><th>Provider</th><th class="r">Mention rate</th></tr></thead>
           <tbody>
-            <tr><td class="name">Bridge</td><td class="r">100%</td></tr>
-            <tr><td class="name">Circle</td><td class="r">100%</td></tr>
-            <tr><td class="name">Brale</td><td class="r">67%</td></tr>
-            <tr><td class="name">Crossmint</td><td class="r">44%</td></tr>
-            <tr><td class="name">Zero Hash</td><td class="r">44%</td></tr>
-            <tr class="brand"><td class="name">Northwind Pay</td><td class="r">33%</td></tr>
+${sovRows.join("\n")}
           </tbody>
         </table>
-        <p class="insight-note">Circle and Bridge lead at 7 and 6 of 9 mentions. Northwind sits sixth at 3, behind rivals it beats on product depth.</p>
+        <p class="insight-note">${esc(cf.sov_insight)}</p>
       </div>
       <div>
         <table>
           <caption>Domains AI cites for the category</caption>
           <thead><tr><th>Website domain</th><th class="r">Citation rate</th></tr></thead>
           <tbody>
-            <tr><td class="name">bridge.xyz</td><td class="r">67%</td></tr>
-            <tr><td class="name">sphere.fi</td><td class="r">33%</td></tr>
-            <tr><td class="name">circle.com</td><td class="r">33%</td></tr>
-            <tr><td class="name">brale.xyz</td><td class="r">44%</td></tr>
-            <tr><td class="name">finextra.com</td><td class="r">33%</td></tr>
-            <tr><td class="name">crossmint.com</td><td class="r">33%</td></tr>
+${citedRows.join("\n")}
           </tbody>
         </table>
-        <p class="insight-note">The top third-party sources are vendor roundups Northwind is not in. AI builds the category answer from lists you are missing from.</p>
+        <p class="insight-note">${esc(cf.cited_insight)}</p>
       </div>
     </div>
   </div>
@@ -271,12 +359,9 @@
     <h2 class="wide">Your audit scores on <em>four performance levers.</em></h2>
     <p class="lead" style="margin-bottom:30px;">Four areas influence how LLMs respond to prompts related to your category. We audited your site, social media, industry publications, and your competitors to score where you currently stand.</p>
     <div class="card" style="padding:8px 34px; width:fit-content;">
-      <div class="lever-score"><div class="lbl"><span class="nm">Access</span><span class="mn">Can a bot read you?</span></div><div class="sc">4.5<span class="u">/ 5</span></div></div>
-      <div class="lever-score"><div class="lbl"><span class="nm">Identity</span><span class="mn">Does AI know who you are?</span></div><div class="sc">3.6<span class="u">/ 5</span></div></div>
-      <div class="lever-score"><div class="lbl"><span class="nm">Content</span><span class="mn">Are you a source worth citing?</span></div><div class="sc">2.6<span class="u">/ 5</span></div></div>
-      <div class="lever-score"><div class="lbl"><span class="nm">Reputation</span><span class="mn">Do other sources vouch for you?</span></div><div class="sc">1.8<span class="u">/ 5</span></div></div>
+${leverRows}
     </div>
-    <p class="footnote">Agents scored your company on 27 dimensions across these four levers.</p>
+    <p class="footnote">Agents scored your company on ${esc(cf.dim_total)} dimensions across these four levers.</p>
   </div>
 </section>
 
@@ -288,13 +373,10 @@
     <table>
       <thead><tr><th>Lever</th><th>Dimension</th><th class="r">Score</th><th>What we found</th></tr></thead>
       <tbody>
-        <tr><td>Access</td><td class="name">AI Crawler Access</td><td class="r"><span class="pill hi">5</span></td><td>No AI search/user bot blocked in robots or at the edge.</td></tr>
-        <tr><td>Access</td><td class="name">Bot Fetchability</td><td class="r"><span class="pill hi">5</span></td><td>Full raw-HTML parity signals across the 8 sampled pages.</td></tr>
-        <tr><td>Access</td><td class="name">Crawl Coverage</td><td class="r"><span class="pill hi">5</span></td><td>Real sitemap, canonicals on every sampled page, shallow navigable paths to each key page.</td></tr>
-        <tr><td>Identity</td><td class="name">Name Binding</td><td class="r"><span class="pill hi">5</span></td><td>Zero wrong-entity answers in 9 by-name responses.</td></tr>
+${scoreRows("best", "hi")}
       </tbody>
     </table>
-    <p class="footnote">Full scores for all 27 dimensions available on request.</p>
+    <p class="footnote">Full scores for all ${esc(cf.dim_total)} dimensions available on request.</p>
   </div>
 </section>
 
@@ -306,13 +388,10 @@
     <table>
       <thead><tr><th>Lever</th><th>Dimension</th><th class="r">Score</th><th>What we found</th></tr></thead>
       <tbody>
-        <tr><td>Reputation</td><td class="name">Category Publications</td><td class="r"><span class="pill lo">1</span></td><td>Absent from every checked category roundup and buyer guide, including the four the measured answers...</td></tr>
-        <tr><td>Content</td><td class="name">Comparison Pages</td><td class="r"><span class="pill lo">1</span></td><td>No comparison or alternatives pages exist.</td></tr>
-        <tr><td>Reputation</td><td class="name">Review Sites</td><td class="r"><span class="pill lo">1</span></td><td>No usable footprint across the resolved set: no G2, Capterra, or TrustRadius profile, and no Messari or...</td></tr>
-        <tr><td>Identity</td><td class="name">Wikipedia &amp; Wikidata</td><td class="r"><span class="pill lo">2</span></td><td>No Wikipedia article (notability thin at Series B), Wikidata stub only, and the crypto stand-ins (IQ.wiki,...</td></tr>
+${scoreRows("worst", "lo")}
       </tbody>
     </table>
-    <p class="footnote">Full scores for all 27 dimensions available on request.</p>
+    <p class="footnote">Full scores for all ${esc(cf.dim_total)} dimensions available on request.</p>
   </div>
 </section>
 
@@ -321,13 +400,40 @@
   <div class="wrap">
     <p class="eyebrow">Where to start</p>
     <h2>Your <em>three highest-leverage fixes.</em></h2>
-    <div class="fix"><div class="n">1</div><div><div class="lbl">Reputation · Category Publications</div><p>Brief the authors of the four payout-API roundups AI already cites, armed with the 2026 benchmark data, and earn placement in each refresh.</p></div></div>
-    <div class="fix"><div class="n">2</div><div><div class="lbl">Content · Comparison Pages</div><p>Ship honest comparison pages for Circle, Bridge, and Stripe payouts, the three rivals whose own pages win the category answers today.</p></div></div>
-    <div class="fix"><div class="n">3</div><div><div class="lbl">Reputation · Earned Press</div><p>Turn the benchmark report into an exclusive data story for one fintech trade outlet, replacing wire echoes with original coverage.</p></div></div>
+${fixCards.join("\n")}
     <p class="fixfoot">Ranked by the importance of each dimension to your AI visibility.</p>
   </div>
 </section>
 
-</div>
+</div>`;
+
+const HTML = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Visibility Report · ${esc(company)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+<style id="aeo-base">${AEO_BASE}
+</style>
+<style id="aeo-report-style">${AEO_STYLE}
+</style>
+</head>
+<body>
+${BODY}
 </body>
 </html>
+`;
+
+// A report never ships with a hole in the headline data.
+const REQUIRED = { company, audit_date: cf.audit_date, disc_gap: cf.disc_gap, assess_gap: cf.assess_gap };
+const missing = Object.entries(REQUIRED).filter(([, v]) => !v).map(([k]) => k);
+if (missing.length) {
+  console.error(`Missing required report values: ${missing.join(", ")} — check deck-overrides.json / canva-fill.json.`);
+  process.exit(1);
+}
+
+await writeFile(`${dir}/report.html`, HTML);
+console.log(`report -> ${dir}/report.html  (${sovRows.length} SoV rows, ${citedRows.length} cited, ${fixCards.length} fixes)`);

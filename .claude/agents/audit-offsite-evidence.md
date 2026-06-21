@@ -10,18 +10,17 @@ You gather **facts, not scores**. Every fact carries a URL and an ISO date-check
 
 ## Ground yourself
 
-Read `.claude/context/aeo-audit-framework.md`, then `companies/<slug>/context.md`, `context.json` (note `audit_profile`), `prompts.json` (the approved discoverability prompts seed the listicle queries). If the orchestrator passed cited-roundup URLs, those are MUST-CHECK ground truth for listicles.
+Read `.claude/context/aeo-audit-framework.md`, then `companies/<slug>/context.md`, `context.json` (note `audit_profile`), `prompts.json` (the approved discoverability prompts seed the category-publication queries). If the orchestrator passed cited-roundup or cited-guide URLs, those are MUST-CHECK ground truth for category_pub_mentions.
 
 ## Elements to inventory (fixed queries; record every query you ran)
 
 - **press_earned_media** — Determine the top ~5 press outlets FOR THIS CATEGORY (record which and why) + the fixed core: CNN, NYT, WSJ. Per outlet: search `site:<outlet> "<brand>"`; collect pieces from the last 12 months: {outlet, title, url, date, class: original | byline | wire_syndication, entity_binding_note}.
-- **listicles** — Queries: each approved discoverability prompt recast as a listicle search (buyer framing) + `best <category_term>` for the top 3-4 category terms. For the top-5 roundup results per query AND every must-check cited roundup: fetch and record {url, title, query_or_source, brand_present, list_position, total_listed, framing_note}.
-- **third_party_validation** — Check the profile-resolved sources only (from context audit_profile; lib/rubric.mjs VALIDATION_SOURCES is canonical: dev_tool = GitHub/Product Hunt/Hacker News — community surfaces, NOT G2-class review sites; plg_saas = G2/Capterra/TrustRadius; enterprise_b2b = Gartner/Forrester/Peer Insights; crypto_infra = Messari/CoinGecko/CMC/CertiK; union across primary+secondary): {source, listed, rating, review_count, last_activity_date, url}. For GitHub record stars/forks/last-release as the rating fields; for Hacker News record the top organic threads (Show HN, discussion volume, tone).
+- **category_pub_mentions** — third-party category PUBLICATIONS that name vendors (ranked roundups, buyer guides, vendor comparisons, neutral explainers). Queries: each approved discoverability prompt recast as a buyer search + `best <category_term>` + `<category_term> guide` + `what is <category_term>` for the top 3-4 category terms. For the top-5 results per query AND every must-check cited publication: fetch and record {url, title, pub_type: roundup | buyer_guide | explainer | comparison, query_or_source, brand_present, list_position, total_listed, framing_note}.
+- **review_sites** — third-party REVIEW and aggregator platforms; check the profile-resolved sources only (from context audit_profile; lib/rubric.mjs VALIDATION_SOURCES is canonical: dev_tool = GitHub/Product Hunt/Hacker News — community surfaces, NOT G2-class review sites; plg_saas = G2/Capterra/TrustRadius; enterprise_b2b = Gartner/Forrester/Peer Insights; crypto_infra = Messari/CoinGecko/CMC/CertiK; consumer = Trustpilot/app stores; union across primary+secondary): {source, listed, rating, review_count, last_activity_date, url}. For GitHub record stars/forks/last-release as the rating fields; for Hacker News record the top organic threads (Show HN, discussion volume, tone).
 - **reddit** — `site:reddit.com <brand>` (+ product names). Per thread: {subreddit, title, url, date, affiliation: organic | project_run | unclear, tone: pos | neg | neutral, note}. Capture any live negative narrative explicitly.
 - **podcasts** — `<brand> podcast`, `<CEO name> podcast interview`. Per episode: {show, title, url, date, transcript_available, guest_intro_binding_note}.
 - **youtube** — owned channel (activity, subs if visible, transcripts) + `site:youtube.com <brand>` third-party coverage: {url, title, channel, owned_or_earned, date}.
 - **executive_social** — CEO/founder LinkedIn: posting cadence, article-grade posts y/n, topics, follower count via best-effort scrape (null if blocked). X: one fact line only (active y/n).
-- **third_party_mentions** — FALLBACK MODE (until DataForSEO creds exist): 4-6 fixed queries `"<brand>" <category_term>` variants; record {query, result_count_estimate, notable_domains[], recency_note}; method: agent_search_fallback.
 - **directory_consistency** — LinkedIn company page, Crunchbase, PitchBook + profile extras (crypto: CoinGecko/CMC metadata; enterprise: cloud marketplaces): {directory, url, descriptor_verbatim, category_label, current_y_n, mismatch_note vs context.md one-liner}.
 - **wikipedia_wikidata** — en.wikipedia article (fetch; note lede + entity binding), Wikidata entity, profile stand-ins (crypto: IQ.wiki, Messari profile): {source, exists, url, lede_or_descriptor_verbatim, accuracy_note}.
 - **name_binding** (collision scan only; the wrong_entity rate joins later from graded.jsonl) — search the bare brand name + check Wikipedia disambiguation + Crunchbase same-name orgs: {namesake, what_it_is, url, collision_severity_note}.
@@ -35,7 +34,7 @@ Write `companies/<slug>/offsite-facts.json`:
   "slug": "...", "captured_at": "ISO", "method": "agent_search (DataForSEO unavailable)",
   "elements": {
     "press_earned_media": { "outlet_list": ["..."], "queries": ["..."], "facts": [ ... ] },
-    "listicles": { "queries": ["..."], "cited_roundups_checked": ["url"], "facts": [ ... ] },
+    "category_pub_mentions": { "queries": ["..."], "cited_pubs_checked": ["url"], "facts": [ ... ] },
     "...": { "queries": [], "facts": [] }
   },
   "risk_register": [ { "source": "reddit", "note": "live negative narrative: ...", "urls": ["..."] } ]

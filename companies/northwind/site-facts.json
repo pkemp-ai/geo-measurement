@@ -1,0 +1,104 @@
+{
+  "slug": "northwind",
+  "domain": "northwindpay.com",
+  "synthetic": true,
+  "note": "Fictional scripted site-crawl ledger for the public showcase (v2.6). Shape matches site-checks.mjs. All pages, dates, and counts are invented; URLs are illustrative and do not resolve.",
+  "captured_at": "2026-06-21T16:55:00.000Z",
+  "updated_at": "2026-06-21T16:55:00.000Z",
+  "sample": {
+    "urls": [
+      { "url": "https://www.northwindpay.com/", "status": 200 },
+      { "url": "https://www.northwindpay.com/company", "status": 200 },
+      { "url": "https://www.northwindpay.com/pay-ins", "status": 200 },
+      { "url": "https://www.northwindpay.com/payouts", "status": 200 },
+      { "url": "https://www.northwindpay.com/conversions", "status": 200 },
+      { "url": "https://www.northwindpay.com/compliance", "status": 200 },
+      { "url": "https://www.northwindpay.com/faq", "status": 200 },
+      { "url": "https://www.northwindpay.com/customers", "status": 200 },
+      { "url": "https://www.northwindpay.com/blog/what-is-a-stablecoin-payout", "status": 200, "is_post": true },
+      { "url": "https://www.northwindpay.com/blog/pay-ins-vs-payouts-vs-conversions", "status": 200, "is_post": true },
+      { "url": "https://www.northwindpay.com/blog/conversions-now-support-stablecoin-to-stablecoin", "status": 200, "is_post": true },
+      { "url": "https://www.northwindpay.com/blog/northwind-pay-series-b", "status": 200, "is_post": true }
+    ],
+    "about_found": true,
+    "pricing_found": false,
+    "blog_found": true
+  },
+  "elements": {
+    "fetchability_no_js": {
+      "facts": [
+        { "url": "https://www.northwindpay.com/", "text_chars": 4820, "text_ratio": 0.41, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/company", "text_chars": 3960, "text_ratio": 0.38, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/pay-ins", "text_chars": 3110, "text_ratio": 0.36, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/payouts", "text_chars": 3340, "text_ratio": 0.37, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/conversions", "text_chars": 2870, "text_ratio": 0.35, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/compliance", "text_chars": 3520, "text_ratio": 0.39, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/faq", "text_chars": 2640, "text_ratio": 0.44, "spa_shell": false, "brand_in_raw": true, "status": 200 },
+        { "url": "https://www.northwindpay.com/customers", "text_chars": 2180, "text_ratio": 0.33, "spa_shell": false, "brand_in_raw": true, "status": 200 }
+      ],
+      "note": "raw-HTML heuristics (visible-text volume, SPA-shell markers, brand presence in raw text); AI crawlers execute no JS"
+    },
+    "crawl_coverage": {
+      "facts": {
+        "sitemap_real": true,
+        "sitemap_status": 200,
+        "canonical_on_sample": "8/8",
+        "homepage_og_type": "website",
+        "nav_paths_found": ["/pay-ins", "/payouts", "/conversions", "/compliance", "/company", "/customers", "/faq", "/blog", "/docs"],
+        "about_page": "https://www.northwindpay.com/company",
+        "pricing_page": null,
+        "blog_index": "https://www.northwindpay.com/blog"
+      }
+    },
+    "entity_schema": {
+      "facts": [
+        { "url": "https://www.northwindpay.com/", "ld_types": ["Organization", "WebSite"], "sameAs_count": 3 },
+        { "url": "https://www.northwindpay.com/company", "ld_types": ["Organization", "Person"], "sameAs_count": 3 },
+        { "url": "https://www.northwindpay.com/payouts", "ld_types": ["FinancialService"], "sameAs_count": 0 },
+        { "url": "https://www.northwindpay.com/pay-ins", "ld_types": ["FinancialService"], "sameAs_count": 0 },
+        { "url": "https://www.northwindpay.com/conversions", "ld_types": ["FinancialService"], "sameAs_count": 0 },
+        { "url": "https://www.northwindpay.com/faq", "ld_types": ["FAQPage"], "sameAs_count": 0 }
+      ]
+    },
+    "branded_faq": {
+      "facts": [
+        { "url": "https://www.northwindpay.com/faq", "faq_schema": true, "question_count": 6, "questions": ["What is Northwind Pay?", "Is Northwind Pay regulated?", "What stablecoins does Northwind Pay support?", "Which countries can I pay out to?", "Does Northwind Pay hold custody of funds?", "How do I get API keys?"] }
+      ]
+    },
+    "answer_structure": {
+      "facts": [
+        { "url": "https://www.northwindpay.com/", "title": "Northwind Pay, One API for stablecoin pay-ins, payouts, and conversions", "headings": ["One API for stablecoin pay-ins, payouts, and conversions", "Built for PSPs and fintechs", "Regulated infrastructure", "How it works"], "intro_excerpt": "Northwind Pay is regulated stablecoin payment infrastructure: one API for pay-ins, payouts, and conversions." },
+        { "url": "https://www.northwindpay.com/payouts", "title": "Stablecoin payouts, Northwind Pay", "headings": ["Send stablecoin payouts in 40+ countries", "Off-ramp to local rails", "Screening and Travel Rule built in"], "intro_excerpt": "Send single and mass stablecoin payouts with off-ramp to local bank rails in 40+ countries." },
+        { "url": "https://www.northwindpay.com/compliance", "title": "Compliance and licensing, Northwind Pay", "headings": ["Regulated by design", "Licenses", "Custody and segregation"], "intro_excerpt": "Northwind Pay is a registered FinCEN MSB with U.S. state money transmitter licenses and a NYDFS BitLicense." }
+      ]
+    },
+    "pricing_transparency": {
+      "facts": { "pricing_page": null }
+    },
+    "llms_txt": {
+      "facts": { "present": true, "status": 200 },
+      "footnote": true
+    },
+    "content_engine": {
+      "facts": {
+        "blog_index": "https://www.northwindpay.com/blog",
+        "sampled": 12,
+        "posts": [
+          { "url": "https://www.northwindpay.com/blog/what-is-a-stablecoin-payout", "title": "What is a stablecoin payout?", "date": "2026-05-28", "byline": "Dana Whitfield", "headings_count": 5, "marketing_density": 0.22, "word_count": 1180, "excerpt": "A stablecoin payout sends value to a recipient as a stablecoin like USDC, then optionally off-ramps to local bank rails." },
+          { "url": "https://www.northwindpay.com/blog/pay-ins-vs-payouts-vs-conversions", "title": "Pay-ins vs payouts vs conversions", "date": "2026-04-30", "byline": "Marcus Lindqvist", "headings_count": 6, "marketing_density": 0.27, "word_count": 1340, "excerpt": "The three primitives of stablecoin money movement, and when a platform needs each." },
+          { "url": "https://www.northwindpay.com/blog/conversions-now-support-stablecoin-to-stablecoin", "title": "Conversions now support stablecoin-to-stablecoin", "date": "2026-04-02", "byline": "Northwind Pay", "headings_count": 3, "marketing_density": 0.51, "word_count": 540, "excerpt": "You can now convert between USDC, USDP, and PYUSD in a single quote." },
+          { "url": "https://www.northwindpay.com/blog/why-payouts-are-the-hard-part-of-stablecoins", "title": "Why payouts are the hard part of stablecoins", "date": "2026-03-05", "byline": "Dana Whitfield", "headings_count": 5, "marketing_density": 0.3, "word_count": 1410, "excerpt": "Acceptance is solved; the hard problem is getting value out to recipients in 40+ countries. We settle most payouts in under a minute." },
+          { "url": "https://www.northwindpay.com/blog/northwind-pay-series-b", "title": "Northwind Pay raises a $48M Series B", "date": "2026-02-18", "byline": "Northwind Pay", "headings_count": 3, "marketing_density": 0.58, "word_count": 620, "excerpt": "Meridian Capital leads our Series B to expand cross-border payout coverage." },
+          { "url": "https://www.northwindpay.com/blog/how-cross-border-stablecoin-settlement-works", "title": "How cross-border stablecoin settlement works", "date": "2026-01-22", "byline": "Marcus Lindqvist", "headings_count": 6, "marketing_density": 0.26, "word_count": 1290, "excerpt": "From pay-in to off-ramp, the path value takes across a corridor." },
+          { "url": "https://www.northwindpay.com/blog/travel-rule-for-stablecoin-payouts", "title": "Travel Rule for stablecoin payouts, explained", "date": "2025-12-11", "byline": "Dana Whitfield", "headings_count": 5, "marketing_density": 0.29, "word_count": 1120, "excerpt": "What the Travel Rule requires and how Northwind handles messaging automatically." },
+          { "url": "https://www.northwindpay.com/blog/new-payout-corridors-latam", "title": "New payout corridors across LatAm", "date": "2025-11-19", "byline": "Northwind Pay", "headings_count": 3, "marketing_density": 0.55, "word_count": 480, "excerpt": "Brazil, Mexico, and Colombia local-rail off-ramp is now live." },
+          { "url": "https://www.northwindpay.com/blog/choosing-a-stablecoin-payments-provider", "title": "How to choose a stablecoin payments provider", "date": "2025-10-08", "byline": "Dana Whitfield", "headings_count": 6, "marketing_density": 0.31, "word_count": 1260, "excerpt": "The questions a PSP should ask before integrating a stablecoin rail." },
+          { "url": "https://www.northwindpay.com/blog/soc2-type-ii", "title": "Northwind Pay completes SOC 2 Type II", "date": "2025-09-16", "byline": "Northwind Pay", "headings_count": 2, "marketing_density": 0.6, "word_count": 410, "excerpt": "Our controls are now independently audited under SOC 2 Type II." },
+          { "url": "https://www.northwindpay.com/blog/mpc-wallets-for-platforms", "title": "MPC wallets for platforms", "date": "2025-08-21", "byline": "Marcus Lindqvist", "headings_count": 5, "marketing_density": 0.34, "word_count": 1050, "excerpt": "How managed MPC wallets let platforms hold balances without running custody." },
+          { "url": "https://www.northwindpay.com/blog/hiring-head-of-compliance", "title": "We are hiring a Head of Compliance", "date": "2025-07-30", "byline": "Northwind Pay", "headings_count": 2, "marketing_density": 0.62, "word_count": 360, "excerpt": "Join Northwind Pay to build the compliance layer for onchain dollars." }
+        ]
+      },
+      "note": "frequency + bylines computed in score-elements (lib/content-engine.mjs); press|substantive classification + perspective/icp/structure/show-dont-tell judged there"
+    }
+  }
+}
