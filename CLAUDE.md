@@ -49,7 +49,7 @@ Each command stops at its gate; nothing auto-advances.
   insights stager, copy verifier — the adversarial fact-check that traces the
   stager's client copy back to the evidence before render) ·
   `.claude/commands/audit-*` — the phase commands
-  (prep / run / report) · `.claude/context/` — framework + deck style.
+  (prep / run / report) · `.claude/context/` — the methodology framework.
 
 ## Prereqs
 
