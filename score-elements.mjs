@@ -126,9 +126,24 @@ function mechScore(id) {
 const parseJSON = (text) => {
   const cleaned = String(text).replace(/```json\s*/gi, "").replace(/```/g, "").trim();
   const s = cleaned.search(/[{[]/);
-  const e = cleaned.lastIndexOf("}");
-  if (s === -1 || e < s) throw new Error("no JSON in judge output");
-  return JSON.parse(cleaned.slice(s, e + 1));
+  if (s === -1) throw new Error("no JSON in judge output");
+  // Extract the FIRST balanced JSON value (string-aware), so trailing prose the
+  // judge appends after the object — which can itself contain braces — is ignored.
+  const open = cleaned[s];
+  const close = open === "{" ? "}" : "]";
+  let depth = 0, inStr = false, esc = false, end = -1;
+  for (let i = s; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === '"') inStr = false;
+    } else if (ch === '"') inStr = true;
+    else if (ch === open) depth++;
+    else if (ch === close && --depth === 0) { end = i; break; }
+  }
+  if (end === -1) throw new Error("no balanced JSON in judge output");
+  return JSON.parse(cleaned.slice(s, end + 1));
 };
 // Fold smart punctuation (curly quotes, apostrophes, dashes) to ASCII so a verbatim
 // evidence quote isn't rejected over a ' vs ' style difference.
