@@ -20,6 +20,8 @@ Read `.claude/context/aeo-audit-framework.md`. Then check, and STOP if any fails
 
 Gate the editorial copy: `node prose-lint.mjs companies/<slug>/deck-overrides.json` — an em dash fails it (exit 1). Fix the offending line in `deck-overrides.json` and rebuild.
 
+**Fact-check gate (pre-render).** The Strengths/Gaps lines, fixes, and insights in `deck-overrides.json` are LLM-authored client copy, not a deterministic projection of the scores — so before rendering, spawn `audit-copy-verifier` → `companies/<slug>/copy-review.json`. It adversarially traces every client claim back to the scorer rationale (`levers.json`), the numbers (`metrics.json`), the fixes (`fixes.json`), and the ledgers, and flags anything not supported: invented numbers, invented causation, strength drift ("never"/"every" over a measured rate), or unsupported named targets. If it flags anything, fix it in `deck-overrides.json` (or re-run the insights-stager) before rendering — **do not render unverified copy.**
+
 ## Step 2 — Render the report
 
 `node build-report.mjs <slug>` → `companies/<slug>/report.html` — the standalone, scoped, flowing report. Every number, table, and insight comes from `report-data.json`; the static copy (method steps, design principles, metric explainers, lever questions) is constant in the renderer. Aborts if a headline value is missing.

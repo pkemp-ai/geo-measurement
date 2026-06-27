@@ -46,7 +46,9 @@ Each command stops at its gate; nothing auto-advances.
   `northwind/` example; real client runs are gitignored.
 - `.claude/agents/audit-*` — the LLM judgment agents (context gatherer, prompt
   definer, on/off-site evidence, performance grader, fix brief + fix strategist,
-  insights stager) · `.claude/commands/audit-*` — the phase commands
+  insights stager, copy verifier — the adversarial fact-check that traces the
+  stager's client copy back to the evidence before render) ·
+  `.claude/commands/audit-*` — the phase commands
   (prep / run / report) · `.claude/context/` — framework + deck style.
 
 ## Prereqs
