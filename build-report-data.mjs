@@ -117,16 +117,18 @@ const DIM_LABEL = {
   reddit: "Reddit", podcasts: "Podcasts", youtube: "YouTube", executive_social: "Executive Social",
   community_forums: "Community Forums",
 };
-// Character caps enforced on generated rationale text so it fits its slide frame.
-// rationale: slides 11/12 best/worst tables — ~648px cells render ~55 chars/line,
-// and each row cleanly holds 2 lines before it crosses the grid line into the next
-// row (rows ~125px apart). 110 keeps the longest rationale at ~2 lines. The text
-// rows have no per-row shape to pin (unlike slide 3 cards), so this cap IS the fix.
-// fix: slide 13 cards.
-const CAPS = { rationale: 110, fix: 160 };
-// Sentence-boundary trim: pack whole sentences up to the cap (greedy), accept any
-// boundary past 25% of the cap so a short clean first sentence beats a long
-// mid-thought "..." cut. Word-boundary "..." only when even sentence 1 overruns.
+// Overflow caps. The report flows (CSS wraps text in its own cells), so these are
+// NON-DESTRUCTIVE WARN thresholds only — "this string is unusually long, eyeball
+// it," not a slice. Client prose is authored to length in the stager and gated by
+// prose-lint; nothing here truncates it. (Generous, report-sized, not slide-sized.)
+const CAPS = { rationale: 240, fix: 320 };
+// First clean sentence — the FALLBACK for a best/worst rationale when the stager
+// has not authored a client-voice line for that element. Never cuts mid-word; it
+// is operator-voice and ugly, but complete and true (the stager's element_rationales
+// is the real client text). Used in place of the old mid-word "..." slicer.
+const firstSentence = (s) => { const t = String(s ?? "").trim(); const m = t.match(/^[\s\S]*?[.!?](?=\s|$)/); return (m ? m[0] : t).trim(); };
+// Sentence-boundary trim (still used for the fix fallback only): pack whole
+// sentences up to the cap (greedy), accept any boundary past 25% of the cap.
 const trimAt = (s, n) => {
   s = String(s ?? "").trim();
   if (s.length <= n) return s;
@@ -208,14 +210,14 @@ const reportData = {
     const e = best4[i]; // N/A fill when fewer than 4 elements clear the >=4 bar
     return [
       [`best_lever_${i + 1}`, e?.lever ?? "N/A"], [`best_dim_${i + 1}`, e?.label ?? "N/A"],
-      [`best_score_${i + 1}`, e ? String(e.score) : "N/A"], [`best_rationale_${i + 1}`, overrides[`best_rationale_${i + 1}`] ?? (e ? deDash(trimAt(e.rationale, CAPS.rationale)) : "N/A")],
+      [`best_score_${i + 1}`, e ? String(e.score) : "N/A"], [`best_rationale_${i + 1}`, e ? deDash(overrides.element_rationales?.[e.id] ?? firstSentence(e.rationale)) : "N/A"],
     ];
   })),
   ...Object.fromEntries([0, 1, 2, 3].flatMap((i) => {
     const e = worst4[i]; // N/A fill when fewer than 4 elements sit at <=2
     return [
       [`worst_lever_${i + 1}`, e?.lever ?? "N/A"], [`worst_dim_${i + 1}`, e?.label ?? "N/A"],
-      [`worst_score_${i + 1}`, e ? String(e.score) : "N/A"], [`worst_rationale_${i + 1}`, overrides[`worst_rationale_${i + 1}`] ?? (e ? deDash(trimAt(e.rationale, CAPS.rationale)) : "N/A")],
+      [`worst_score_${i + 1}`, e ? String(e.score) : "N/A"], [`worst_rationale_${i + 1}`, e ? deDash(overrides.element_rationales?.[e.id] ?? firstSentence(e.rationale)) : "N/A"],
     ];
   })),
   sov_table: tokens.sov_table, top_cited_domains: tokens.top_cited_domains,
@@ -231,15 +233,15 @@ const reportData = {
   ...scoreFields(site.dimensions, siteLabels, "site"),
 };
 
-// Character caps from the Canva master frames (inspection-based, tunable). Warn on overflow.
+// Overflow WARN thresholds (non-destructive — the flowing report wraps text; this
+// only flags an unusually long string to eyeball). Sized for the in-page report,
+// not the retired slide cells.
 const LIMITS = {
-  company: 30, audit_date: 20,
-  disc_example_prompt: 130, assess_example_prompt: 130,
-  disc_gap: 130, assess_gap: 130, cited_insight: 160, sov_insight: 130,
+  company: 40, audit_date: 24,
+  disc_example_prompt: 200, assess_example_prompt: 200,
+  disc_gap: 300, assess_gap: 300, cited_insight: 320, sov_insight: 280,
   fix_1: CAPS.fix, fix_2: CAPS.fix, fix_3: CAPS.fix,
-  fix_label_1: 44, fix_label_2: 44, fix_label_3: 44,
-  rep_summary: 110, content_summary: 110, site_summary: 110,
-  rep_top_fix: 160, content_top_fix: 160, site_top_fix: 160,
+  fix_label_1: 48, fix_label_2: 48, fix_label_3: 48,
   ...Object.fromEntries([1, 2, 3, 4].flatMap((n) => [
     [`best_rationale_${n}`, CAPS.rationale], [`worst_rationale_${n}`, CAPS.rationale],
   ])),

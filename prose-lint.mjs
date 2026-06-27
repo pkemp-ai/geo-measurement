@@ -24,6 +24,11 @@ const RULES = [
   { id: "hype",           sev: WARN, re: /\b(?:robust|seamless(?:ly)?|unlock|delve|tapestry|realm|testament|elevate|harness|boasts?|plethora|myriad|underscore[sd]?|pivotal|game[- ]?changer|cutting[- ]edge|ever[- ]evolving|supercharge|turbocharge|treasure trove)\b/gi, hint: "AI-vocabulary hype word" },
   { id: "leverage-verb",  sev: WARN, re: /(?<!-)\bleverag(?:e|ed|es|ing)\b/gi, hint: 'the "leverage" verb tell (try "use"); a hyphenated "highest-leverage" is fine' },
   { id: "in-todays",      sev: WARN, re: /\bin today'?s\b/gi, hint: '"in today\'s ..." opener' },
+  // Operator-voice leaking into client copy: a bare score, or the scorer's own
+  // facet vocabulary. These never belong in a sentence a prospect reads.
+  { id: "scored-voice",   sev: WARN, re: /\b\d\s*\/\s*5\b|\bweighted on\b|\bfacets?\s*:/gi, hint: "scorer voice in client copy: state the finding in plain language, not a score/facet dump" },
+  // Truncation tell: an ellipsis usually marks copy that trails off or got cut.
+  { id: "truncation",     sev: WARN, re: /\.\.\.|…/g, hint: "ellipsis reads as truncated/trailing-off copy; state it fully" },
 ];
 
 async function getInput() {
