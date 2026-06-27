@@ -88,8 +88,7 @@ Reads `context.md`. Tools: `Read, Write`
 Orchestrator writes to three databases for review by operator, prints a summary and stops:
 
 - **Audit Index:** one row per company w/ run slug; Status set to `Awaiting prompt approval`.
-- **Audit Prompts:** one row per prompt, mapped to discoverability or assessment.
-- **Audit Criteria:** one row per criterion so the operator can edit the atomic list.
+- **Audit Prompts:** one row per prompt × criterion — prompt columns (track, prompt, runs, comparison tags) repeat across a prompt's rows, criterion columns (criterion text, weight, kill) are unique per row. The operator edits both the prompts and the grading rubric in this one table.
 
 ## Analysis Phase
 
@@ -107,9 +106,9 @@ Reads the methodology file, confirms the OpenRouter API key is set (stops if not
 
 ### Step 1 — Sync approved prompts + criteria
 
-**Reads:** Notion (Audit Prompts, Audit Criteria)
+**Reads:** Notion (Audit Prompts)
 
-Rebuilds `prompts.json` from the Notion tables, so any edits the operator made at Gate 1 are used. Pulls prompt text, track, runs, and the comparison tags from Audit Prompts, and one row per criterion (text / weight / kill) from Audit Criteria, grouped back onto each prompt.
+Rebuilds `prompts.json` from the Notion table, so any edits the operator made at Gate 1 are used. Pulls prompt text, track, runs, and the comparison tags from the prompt-level columns, and the criterion rows (criterion text / weight / kill) from the same table, grouped back onto each prompt.
 
 **Writes:** `prompts.json` (rebuilt from Notion inputs)
 

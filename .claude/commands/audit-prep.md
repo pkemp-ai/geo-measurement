@@ -24,15 +24,13 @@ Spawn the `audit-prompt-definer` subagent for the slug. It reads context.md and 
 
 ## Step 4 — Write to Notion (Gate 1)
 
-Three databases live under your Notion workspace (find-or-create each by title via `notion-search`):
+Two databases live under your Notion workspace (find-or-create each by title via `notion-search`):
 - **AEO Audits** — `Company` (title), `Domain` (text), `Status` (select: Prep, Awaiting prompt approval, Running, Awaiting findings approval, Reporting, Published), `Audit Date` (date), `Report URL` (url). One row per company.
-- **AEO Prompts** — `Prompt ID` (title), `Company` (select), `Track` (select: discoverability, assessment), `Prompt` (text), `Runs` (number), `Rationale` (text), `Is comparison` (checkbox), `Named rival` (text), `Approved` (checkbox). One row per prompt.
-- **AEO Criteria** — `Criterion ID` (title, `<prompt-id>.c<n>`), `Company` (select), `Prompt ID` (select), `Criterion` (text), `Weight` (number), `Kill` (checkbox). **One row per criterion** so the operator reviews and edits each discretely — never a bulleted blob.
+- **AEO Prompts** — the single Gate-1 table, **one row per (prompt × criterion)**. Prompt-level columns repeat across a prompt's rows; criterion-level columns are unique per row: `Prompt ID` (title, repeats), `Company` (select), `Track` (select: discoverability, assessment), `Prompt` (text), `Runs` (number), `Rationale` (text), `Is comparison` (checkbox), `Named rival` (text), `Criterion ID` (text, `<prompt-id>.c<n>`), `Criterion` (text), `Weight` (number), `Kill` (checkbox). The operator reviews and edits both the prompts and the grading rubric here, one criterion per row. (The separate AEO Criteria table is retired, folded in here.)
 
 Then:
 1. Create/update the company's **AEO Audits** row: Company, Domain, Status = `Awaiting prompt approval`, Audit Date = today. Body = a short context summary (entity, what it does, ICP, category terms, competitive set, positioning, pricing — distilled from context.md) for grounding.
-2. Write the prompts as **AEO Prompts** rows: Company = `<co>`, Track, Prompt, Runs (from prompts.json), Rationale, `Is comparison` + `Named rival` (set on the head-to-head / alternatives prompt, blank elsewhere; `/audit-run` reads these back into `is_comparison`/`named_rival`). **This table is where the operator edits prompts and run counts.**
-3. Write every criterion as an **AEO Criteria** row: Criterion ID, Company, Prompt ID, Criterion text, Weight, Kill — straight from prompts.json. **This table is where the operator edits the grading rubric**, one criterion per row.
+2. Write the prompts + rubric as **AEO Prompts** rows: for each prompt in prompts.json, emit one row per `success_criteria[]` entry — prompt-level columns (Company = `<co>`, Track, Prompt, Runs, Rationale, Is comparison, Named rival) repeated on each of that prompt's rows; criterion columns (Criterion ID, Criterion, Weight, Kill) unique per row. `Is comparison` + `Named rival` are set on the head-to-head / alternatives prompt (blank elsewhere; `/audit-run` reads these back into `is_comparison`/`named_rival`). **This single table is where the operator edits both the prompts (run counts, wording) and the grading rubric (criterion text, weight, kill).**
 
 Use `notion-create-pages` for all body/row content — it renders multi-line cleanly. **Do NOT use the `update-page` `replace_content` / `insert_content` commands for multi-line body content — they mangle newlines into literal "n".** (`update_content` search-replace and `update_properties` are safe.)
 
