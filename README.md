@@ -183,23 +183,23 @@ Orchestrator writes to two databases and creates one artifact for human review a
 
 ### Phase Summary
 
-Renders the human-approved findings into a self-contained, in-page HTML report — deterministic and key-free, no LLM calls. `build-deck.mjs` resolves the company JSONs into a flat data contract (`canva-fill.json`, a legacy name from the retired Canva path), and `build-report.mjs` renders that into `report.html`.
+Renders the human-approved findings into a self-contained, in-page HTML report — deterministic and key-free, no LLM calls. `build-report-data.mjs` resolves the company JSONs into a flat data contract (`report-data.json`, emitting only the tokens the renderer uses), and `build-report.mjs` renders that into `report.html`. Every client-facing line — the fixes and the strengths/gaps findings — is authored by the insights-stager in one client voice and fact-checked against the evidence before it renders, so report copy is never raw scorer output.
 
 ### Step 0 — Ground + preconditions
 
 Reads the methodology file and takes `<slug>` as its key. Stops unless the findings are approved.
 
-### Step 1 — Build the report data (`build-deck.mjs`)
+### Step 1 — Build the report data (`build-report-data.mjs`)
 
 **Reads:** `deck-overrides.json`, `findings.json`, `metrics.json`, `levers.json`, `classified.jsonl`, `context.json`
 
-Resolves one value per token for the whole report — scoreboard rates and lever scores, the share-of-voice and cited-domain rows, the best/worst dimension tables, and the top-three fixes. **Aborts on any missing required value.** Then `prose-lint.mjs` gates the editorial copy.
+Resolves one value per token for the whole report — scoreboard rates and lever scores, the share-of-voice and cited-domain rows, the best/worst dimension tables, and the top-three fixes. **Aborts on any missing required value.** Two gates then check the editorial copy: `prose-lint.mjs` (em-dash and scorer-voice tells) and the `audit-copy-verifier` agent (flags any client claim not traceable to the scores, metrics, fixes, or ledgers).
 
-**Writes:** `canva-fill.json` (the report's data contract)
+**Writes:** `report-data.json` (the report's data contract)
 
 ### Step 2 — Render the report (`build-report.mjs`)
 
-**Reads:** `canva-fill.json`, `context.json`
+**Reads:** `report-data.json`, `context.json`
 
 Renders the data into one flowing HTML page — cover, method, what we measured, performance score, scoreboard, share of voice, audit scores, strengths, gaps, fixes. Every number and table comes from the data contract; the static copy (method steps, design principles, metric explainers) is constant in the renderer. Aborts if a headline value is missing.
 
@@ -224,7 +224,7 @@ Deterministic, key-free Node (native `fetch`, no dependencies). Phase order, top
 | `score-levers.mjs` | Back-compat shim: runs `score-elements` then `score-importance` | — |
 | `build-findings.mjs` | Stitches the run's artifacts into one human-readable Gate 2 doc | `findings.md` |
 | `build-audit-log.mjs` | Per-element rows (score + importance + fix) for the Notion Audit Log | `audit-log.json` |
-| `build-deck.mjs` | Resolves the company JSONs into the flat report data contract; aborts on a missing required value | `canva-fill.json` |
+| `build-report-data.mjs` | Resolves the company JSONs into the flat report data contract (emits only the tokens the renderer uses); aborts on a missing required value | `report-data.json` |
 | `build-report.mjs` | Renders the data contract into the self-contained in-page HTML report | `report.html` |
 | `prose-lint.mjs` | Flags AI-writing tells in the report copy; hard-fails on em dashes | — |
 
@@ -243,7 +243,8 @@ LLM judgment, grounded by the shared methodology file. `.claude/agents/`.
 | `audit-performance-grader` | Judges each answer against its criteria: pass/partial/fail + verbatim quote. Never scores | `verdicts.jsonl` |
 | `audit-fix-brief` | Run-aware strategy brief fusing positioning with the run's findings | `fix-context.md` |
 | `audit-fix-strategist` | Decides the fixes: bespoke, re-ranked, with named targets from the ledgers | `fixes.json` |
-| `audit-insights-stager` | Assembles the Gate 2 artifact: verdict, both scorecards, prioritized fixes | `findings.json`, `deck-overrides.json` |
+| `audit-insights-stager` | Assembles the Gate 2 artifact and authors all client-facing copy in one voice: verdict, both scorecards, prioritized fixes, and the strengths/gaps findings | `findings.json`, `deck-overrides.json` |
+| `audit-copy-verifier` | Adversarially fact-checks the stager's client copy against the scores, metrics, fixes, and ledgers; flags any claim not traceable to the evidence (invented numbers/causation, strength drift, unsupported targets) before render | `copy-review.json` |
 
 Three commands (`.claude/commands/`) orchestrate the phases: `audit-prep` (Research, Gate 1), `audit-run` (Analysis, Gate 2), `audit-report` (Reporting).
 
