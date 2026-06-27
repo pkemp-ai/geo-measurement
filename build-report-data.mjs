@@ -28,9 +28,8 @@ const dir = `${root}/companies/${slug}`;
 const load = async (f) => JSON.parse(await readFile(`${dir}/${f}`, "utf8"));
 const loadOpt = async (f) => { try { return await load(f); } catch { return {}; } };
 
-const [ctx, metrics, findings, reputation, content, site, prompts, overrides] = await Promise.all([
+const [ctx, metrics, findings, prompts, overrides] = await Promise.all([
   load("context.json"), load("metrics.json"), load("findings.json"),
-  load("reputation.json"), load("content.json"), load("site.json"),
   load("prompts.json"), loadOpt("deck-overrides.json"),
 ]);
 // v2.3 lever/element data (new master, slides 3/9/10/11/12). Optional so the
@@ -46,17 +45,6 @@ const perf = (x) => `${x.toFixed(2)}`;
 const deDash = (s) => s.replace(/\s*—\s*/g, ", ");
 const firstPrompt = (track) => deDash((prompts.find((p) => p.track === track)?.text || "").trim());
 
-const scoreList = (dims, labels) =>
-  Object.entries(labels)
-    .map(([k, label]) => ({ label, score: dims[k]?.score }))
-    .filter((d) => d.score != null)
-    .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
-    .map((d) => `${d.label} ${d.score}`)
-    .join(", ");
-
-const repLabels = { press: "Press", directories: "Directories", wikipedia: "Wikipedia", podcasts_bylines: "Podcasts", reddit: "Reddit", review_site: "Review sites", listicles: "Listicles" };
-const contentLabels = { original_research_data: "Original research", definitive_guides: "Definitive guides", named_frameworks: "Named frameworks", backlinks_syndication: "Backlinks", publishing_cadence: "Cadence" };
-const siteLabels = { fetchability_no_js: "Fetchable without JS", llms_txt: "llms.txt", schema_markup: "Schema", claim_sentence_density: "Claim density", team_about_clarity: "About and team", internal_linking: "Internal links", faq_presence: "FAQ", pricing_clarity: "Pricing" };
 
 const sovRanked = () => [[ctx.company, metrics.share_of_voice.brand], ...Object.entries(metrics.share_of_voice.competitors)]
   .sort((a, b) => b[1] - a[1] || (a[0] === ctx.company ? -1 : b[0] === ctx.company ? 1 : a[0].localeCompare(b[0])));
@@ -68,7 +56,7 @@ const topCited = () =>
     .map((d) => `${d.host} ${pct(d.rate)} (${srcLabel[d.source_type] || d.source_type})`)
     .join(", ");
 
-const editorial = ["disc_gap", "assess_gap", "cited_insight", "sov_insight", "rep_summary", "content_summary", "site_summary", "rep_top_fix", "content_top_fix", "site_top_fix"];
+const editorial = ["disc_gap", "assess_gap", "cited_insight", "sov_insight"];
 
 const tokens = {
   company: ctx.company,
@@ -85,9 +73,6 @@ const tokens = {
   assess_performance: perf(metrics.performance?.assessment?.blended_avg ?? findings.assessment.avg_performance),
   sov_table: sovTable(),
   top_cited_domains: topCited(),
-  rep_scores: scoreList(reputation.dimensions, repLabels),
-  content_scores: scoreList(content.dimensions, contentLabels),
-  site_scores: scoreList(site.dimensions, siteLabels),
   ...Object.fromEntries(editorial.map((k) => [k, overrides[k]])),
 };
 
@@ -98,8 +83,6 @@ const padN = (a, n) => a.concat(Array(Math.max(0, n - a.length)).fill("")).slice
 const ranked = sovRanked();
 const nDisc = metrics.share_of_voice.n_discoverability || 1;
 const cited = (metrics.top_cited_domains?.discoverability || []).slice(0, 6);
-const scoreFields = (dims, labels, prefix) =>
-  Object.fromEntries(Object.keys(labels).filter((k) => dims[k]?.score != null).map((k) => [`${prefix}_score_${k}`, String(dims[k].score)]));
 
 // ---- v2.3 tokens for the new master (slides 3, 9, 10, 11, 12) ----
 const LEVER_LABEL = { access: "Access", identity: "Identity", content: "Content", reputation: "Reputation" };
@@ -180,18 +163,14 @@ const reportData = {
   disc_mention: tokens.disc_mention, disc_citation: tokens.disc_citation, disc_performance: tokens.disc_performance,
   assess_mention: tokens.assess_mention, assess_citation: tokens.assess_citation, assess_performance: tokens.assess_performance,
   disc_gap: tokens.disc_gap, assess_gap: tokens.assess_gap, cited_insight: tokens.cited_insight, sov_insight: tokens.sov_insight,
-  rep_summary: tokens.rep_summary, content_summary: tokens.content_summary, site_summary: tokens.site_summary,
-  rep_top_fix: tokens.rep_top_fix, content_top_fix: tokens.content_top_fix, site_top_fix: tokens.site_top_fix,
   // fixes: the stager pins elements via fix_target_N and writes fix_N prose; the
-  // label always derives from the same element as the text. Fallbacks: builder's
-  // own priority ranking (fixTop) with the element rationale as placeholder text,
-  // then the legacy three-bucket fixes for pre-v2.2 companies.
+  // label always derives from the same element as the text. Fallback: the builder's
+  // own priority ranking (fixTop) with the element rationale as placeholder text.
   ...Object.fromEntries([1, 2, 3].flatMap((n) => {
     const el = els.find((e) => e.id === overrides[`fix_target_${n}`])
       ?? (fixTop[n - 1] ? els.find((e) => e.id === fixTop[n - 1].element) : null);
-    const legacy = [tokens.rep_top_fix, tokens.content_top_fix, tokens.site_top_fix][n - 1];
     return [
-      [`fix_${n}`, overrides[`fix_${n}`] ?? (el ? deDash(trimAt(el.rationale, CAPS.fix)) : legacy)],
+      [`fix_${n}`, overrides[`fix_${n}`] ?? (el ? deDash(trimAt(el.rationale, CAPS.fix)) : "")],
       [`fix_label_${n}`, el ? `${el.lever} - ${el.label}` : ""],
     ];
   })),
@@ -221,16 +200,12 @@ const reportData = {
     ];
   })),
   sov_table: tokens.sov_table, top_cited_domains: tokens.top_cited_domains,
-  rep_scores: tokens.rep_scores, content_scores: tokens.content_scores, site_scores: tokens.site_scores,
   ...Object.fromEntries(padN(ranked.map(([n]) => n), 8).map((n, i) => [`sov_label_${i + 1}`, n])),
   ...Object.fromEntries(padN(ranked.map(([, v]) => String(v)), 8).map((v, i) => [`sov_value_${i + 1}`, v])),
   ...Object.fromEntries(padN(ranked.map(([, v]) => Math.round((v / nDisc) * 100) + "%"), 8).map((p, i) => [`sov_pct_${i + 1}`, p])),
   ...Object.fromEntries(padN(cited.map((d) => d.host), 6).map((h, i) => [`cited_host_${i + 1}`, h])),
   ...Object.fromEntries(padN(cited.map((d) => `${pct(d.rate)} · ${srcLabel[d.source_type] || d.source_type}`), 6).map((m, i) => [`cited_meta_${i + 1}`, m])),
   ...Object.fromEntries(padN(cited.map((d) => pct(d.rate)), 6).map((r, i) => [`cited_rate_${i + 1}`, r])),
-  ...scoreFields(reputation.dimensions, repLabels, "rep"),
-  ...scoreFields(content.dimensions, contentLabels, "content"),
-  ...scoreFields(site.dimensions, siteLabels, "site"),
 };
 
 // Overflow WARN thresholds (non-destructive — the flowing report wraps text; this
