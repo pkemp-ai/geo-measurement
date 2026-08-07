@@ -228,7 +228,7 @@ Deterministic, key-free Node (native `fetch`, no dependencies). Phase order, top
 | `build-report.mjs` | Renders the data contract into the self-contained in-page HTML report | `report.html` |
 | `prose-lint.mjs` | Flags AI-writing tells in the report copy; hard-fails on em dashes | — |
 
-`lib/`: `surfaces.mjs` + `openrouter.mjs` (surface adapter + pinned judge calls), `rubric.mjs` (elements, anchors, profiles, importance weights), `content-engine.mjs` (the decomposed Content-lever scorer), `importance.mjs` (importance scoring), `dataforseo.mjs` (optional SERP/mentions data, degrades to agent search), `html.mjs`.
+`lib/`: `surfaces.mjs` + `openrouter.mjs` (surface adapter + pinned judge calls), `rubric.mjs` (elements, anchors, profiles, importance weights), `content-engine.mjs` (the decomposed Content-lever scorer), `importance.mjs` (importance scoring), `openrouter-search.mjs` (scripted off-site link/mention discovery through the OpenRouter web plugin, CLI-callable; degrades to agent search without a key), `html.mjs`.
 
 ## Agents
 

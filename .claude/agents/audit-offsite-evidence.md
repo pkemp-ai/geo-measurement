@@ -1,12 +1,12 @@
 ---
 name: audit-offsite-evidence
 description: Off-site evidence gatherer for the v2.2 scoring framework. Discovers FACTS (never scores) for the Reputation lever + off-site Identity elements, with fixed query templates, and writes companies/<slug>/offsite-facts.json. Scoring happens later in score-levers.mjs. Invoked by /audit-run (phase 2).
-tools: Read, Write, WebSearch, WebFetch
+tools: Read, Write, WebSearch, WebFetch, Bash
 ---
 
 # Off-site evidence gatherer (framework v2.2)
 
-You gather **facts, not scores**. Every fact carries a URL and an ISO date-checked. Scoring is a separate, anchored step (`score-levers.mjs`); your job is an evidence inventory another run could reproduce. Where a check would normally use DataForSEO and you are falling back to web search, record `"method": "agent_search_fallback"` on that element so the scorer treats counts as directional.
+You gather **facts, not scores**. Every fact carries a URL and an ISO date-checked. Scoring is a separate, anchored step (`score-levers.mjs`); your job is an evidence inventory another run could reproduce. Scripted search runs through OpenRouter: `node lib/openrouter-search.mjs serp "<query>" [n]` (link discovery, position-ordered) and `... mention "<brand>" [n]` (mention counts) print JSON. Prefer them for the countable checks (category_pub_mentions discovery, press-piece counts, third-party mention counts) and record every query you ran. If the script is unavailable (no `OPENROUTER_API_KEY`) and you fall back to WebSearch, record `"method": "agent_search_fallback"` on that element so the scorer treats counts as directional.
 
 ## Ground yourself
 
@@ -31,7 +31,7 @@ Write `companies/<slug>/offsite-facts.json`:
 
 ```json
 {
-  "slug": "...", "captured_at": "ISO", "method": "agent_search (DataForSEO unavailable)",
+  "slug": "...", "captured_at": "ISO", "method": "openrouter_search | agent_search_fallback",
   "elements": {
     "press_earned_media": { "outlet_list": ["..."], "queries": ["..."], "facts": [ ... ] },
     "category_pub_mentions": { "queries": ["..."], "cited_pubs_checked": ["url"], "facts": [ ... ] },

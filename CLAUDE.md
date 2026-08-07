@@ -40,8 +40,9 @@ Each command stops at its gate; nothing auto-advances.
 - `lib/` — `surfaces.mjs`, `openrouter.mjs` (surface adapter + pinned judge
   calls), `rubric.mjs` (the framework encoded: elements, anchors, profiles,
   importance weights), `content-engine.mjs` (decomposed Content-lever scorer),
-  `importance.mjs` (importance scoring: prior x observed signal), `dataforseo.mjs`
-  (optional SERP/mentions data, degrades to agent search).
+  `importance.mjs` (importance scoring: prior x observed signal),
+  `openrouter-search.mjs` (scripted off-site link/mention discovery via the
+  OpenRouter web plugin, CLI-callable; degrades to agent search without a key).
 - `companies/<slug>/` — per-company data. The repo ships only the synthetic
   `northwind/` example; real client runs are gitignored.
 - `.claude/agents/audit-*` — the LLM judgment agents (context gatherer, prompt
@@ -51,11 +52,11 @@ Each command stops at its gate; nothing auto-advances.
 
 ## Prereqs
 
-- `OPENROUTER_API_KEY` in `.env` (see `.env.example`) — surface queries +
-  pinned-judge calls run through OpenRouter.
+- `OPENROUTER_API_KEY` in `.env` (see `.env.example`) — the one metered key:
+  surface queries, pinned-judge calls, and the scripted off-site search
+  (`lib/openrouter-search.mjs`) all run through OpenRouter.
 - Optional: `BRAVE_SEARCH_API_KEY` (free tier) for a reliable Brave
-  index-presence check; `DATAFORSEO_LOGIN`/`DATAFORSEO_PASSWORD` for
-  API-backed mention/SERP facts (everything degrades gracefully without them).
+  index-presence check (everything degrades gracefully without it).
 - A Notion workspace is optional: the production system parks the two gates
   there, but the audit runs end to end on local files without it.
 
