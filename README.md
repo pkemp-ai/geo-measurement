@@ -6,7 +6,7 @@ By Patrick Kemp / [pkemp.ai](https://pkemp.ai). This is a public version of the 
 
 ## Abstract
 
-An agentic system that:
+An automated system that:
 
 - (a) measures how LLM models represent a company in prompts used by its buyers.
 - (b) audits that company's online presence on dimensions that influence LLM responses.
